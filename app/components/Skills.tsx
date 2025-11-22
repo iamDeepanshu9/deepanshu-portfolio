@@ -1,19 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
 import SectionTitle from "./SectionTitle";
-import { FaReact, FaAngular, FaNodeJs } from "react-icons/fa";
-import { SiNextdotjs, SiTailwindcss, SiTypescript } from "react-icons/si";
-
-const skills = [
-    { name: "Angular", icon: FaAngular },
-    { name: "React", icon: FaReact },
-    { name: "Next.js", icon: SiNextdotjs },
-    { name: "TypeScript", icon: SiTypescript },
-    { name: "Node.js", icon: FaNodeJs },
-    { name: "Tailwind CSS", icon: SiTailwindcss },
-];
+import { useData, getIconComponent } from "../context/DataContext";
 
 export default function Skills() {
+    const { skills } = useData();
+
     return (
         <section className="py-20 bg-white overflow-hidden">
             <SectionTitle title="My Skills" subtitle="Expertise Areas" watermark="Skills" />
@@ -22,21 +14,26 @@ export default function Skills() {
                 {/* Left Side - Skills List */}
                 <div className="w-full md:w-1/2 md:pl-20 mb-16 md:mb-0">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-12">
-                        {skills.map((skill, index) => (
-                            <motion.div
-                                key={skill.name}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                                viewport={{ once: true }}
-                                className="flex items-center space-x-6 group cursor-default"
-                            >
-                                <div className="p-4 bg-neutral-50 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-500 shadow-sm">
-                                    <skill.icon className="text-3xl" />
-                                </div>
-                                <span className="text-2xl font-serif font-medium text-neutral-800 group-hover:translate-x-2 transition-transform duration-500">{skill.name}</span>
-                            </motion.div>
-                        ))}
+                        {skills.map((skill, index) => {
+                            const Icon = getIconComponent(skill.iconName);
+                            return (
+                                <motion.div
+                                    key={skill.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                                    viewport={{ once: true }}
+                                    className="flex items-center space-x-6 group cursor-default"
+                                >
+                                    <div className="p-4 bg-neutral-50 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-500 shadow-sm">
+                                        <Icon className="text-3xl" />
+                                    </div>
+                                    <span className="text-2xl font-serif font-medium text-neutral-800 group-hover:translate-x-2 transition-transform duration-500">
+                                        {skill.name}
+                                    </span>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </div>
 

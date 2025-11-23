@@ -7,16 +7,17 @@ import { useData } from "../context/DataContext";
 export default function Testimonials() {
     const { testimonials } = useData();
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
 
     useEffect(() => {
-        if (testimonials.length <= 1) return;
+        if (testimonials.length <= 1 || isPaused) return;
 
         const interval = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % testimonials.length);
         }, 3000);
 
         return () => clearInterval(interval);
-    }, [testimonials.length]);
+    }, [testimonials.length, isPaused]);
 
     if (testimonials.length === 0) return null;
 
@@ -27,7 +28,11 @@ export default function Testimonials() {
                 <span className="absolute -top-20 -left-20 text-[20rem] font-serif text-black">“</span>
             </div>
 
-            <div className="container mx-auto px-4 text-center relative z-10">
+            <div
+                className="container mx-auto px-4 text-center relative z-10"
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+            >
                 <div className="max-w-4xl mx-auto h-[400px] flex flex-col justify-center">
                     <FaQuoteLeft className="text-4xl md:text-5xl text-neutral-300 mx-auto mb-8" />
 

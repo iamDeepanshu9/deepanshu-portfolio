@@ -614,7 +614,7 @@ function TestimonialsManager({
                     <input
                         type="text"
                         placeholder="Role / Company"
-                        value={form.author}
+                        value={form.role}
                         onChange={(e) => setForm({ ...form, role: e.target.value })}
                         className="flex-1 px-4 py-2 border border-gray-400 rounded-lg text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
                     />

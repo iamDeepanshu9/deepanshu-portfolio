@@ -50,27 +50,48 @@ export default function Skills() {
                         <div className="absolute inset-0 bg-white overflow-hidden flex flex-col">
                             {/* Mock Header */}
                             <div className="h-16 bg-neutral-100 border-b border-neutral-200 flex items-end pb-2 justify-center">
-                                <span className="text-xs font-bold text-neutral-400">DEEPANSHU</span>
+                                <span className="text-xs font-bold text-neutral-400">Tech Stack</span>
                             </div>
                             {/* Mock Body */}
                             <div className="flex-1 p-4 bg-neutral-50 overflow-y-auto no-scrollbar">
-                                <div className="space-y-3">
-                                    {skills.slice(0, 5).map((skill) => {
-                                        const Icon = getIconComponent(skill.iconName);
-                                        return (
-                                            <div key={skill.id} className="flex items-center p-2 bg-white rounded-lg shadow-sm border border-neutral-100">
-                                                <div className="p-1.5 bg-neutral-100 rounded-md mr-3">
-                                                    <Icon className="text-xs text-neutral-600" />
+                                <div className="flex-1 p-4 bg-neutral-50 overflow-y-auto no-scrollbar">
+                                    <div className="space-y-6">
+                                        {[
+                                            {
+                                                category: "Frontend",
+                                                items: ["Angular (v14–17)", "React & Next.js", "TypeScript", "HTML5 & CSS3", "Tailwind CSS", "Material UI"]
+                                            },
+                                            {
+                                                category: "Backend",
+                                                items: ["Node.js (Express)", "PostgreSQL", "MySQL", "Redis", "REST API Design"]
+                                            },
+                                            {
+                                                category: "Testing",
+                                                items: ["Jest (Unit)", "Cypress (E2E)"]
+                                            },
+                                            {
+                                                category: "DevOps",
+                                                items: ["Docker", "Kubernetes", "AWS Lambda", "CI/CD Pipelines", "Monitoring"]
+                                            }
+                                        ].map((group, groupIndex) => (
+                                            <div key={groupIndex}>
+                                                <h4 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2 sticky top-0 bg-neutral-50 py-1">
+                                                    {group.category}
+                                                </h4>
+                                                <div className="space-y-2">
+                                                    {group.items.map((skill, index) => (
+                                                        <div key={index} className="flex items-center p-2 bg-white rounded-lg shadow-sm border border-neutral-100">
+                                                            <div className={`w-1.5 h-1.5 rounded-full mr-2 ${group.category === "Frontend" ? "bg-blue-500" :
+                                                                group.category === "Backend" ? "bg-green-500" :
+                                                                    group.category === "Testing" ? "bg-yellow-500" : "bg-purple-500"
+                                                                }`}></div>
+                                                            <span className="text-xs font-medium text-neutral-800">{skill}</span>
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                                <span className="text-xs font-medium text-neutral-800">{skill.name}</span>
                                             </div>
-                                        );
-                                    })}
-                                    {skills.length > 5 && (
-                                        <div className="text-center pt-2">
-                                            <span className="text-[10px] text-neutral-400">and more...</span>
-                                        </div>
-                                    )}
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>

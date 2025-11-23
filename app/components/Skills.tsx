@@ -53,11 +53,25 @@ export default function Skills() {
                                 <span className="text-xs font-bold text-neutral-400">DEEPANSHU</span>
                             </div>
                             {/* Mock Body */}
-                            <div className="flex-1 p-4 space-y-4 bg-neutral-50">
-                                <div className="h-32 bg-neutral-200 rounded-2xl animate-pulse"></div>
-                                <div className="h-20 bg-neutral-200 rounded-xl animate-pulse delay-75"></div>
-                                <div className="h-20 bg-neutral-200 rounded-xl animate-pulse delay-150"></div>
-                                <div className="h-20 bg-neutral-200 rounded-xl animate-pulse delay-200"></div>
+                            <div className="flex-1 p-4 bg-neutral-50 overflow-y-auto no-scrollbar">
+                                <div className="space-y-3">
+                                    {skills.slice(0, 5).map((skill) => {
+                                        const Icon = getIconComponent(skill.iconName);
+                                        return (
+                                            <div key={skill.id} className="flex items-center p-2 bg-white rounded-lg shadow-sm border border-neutral-100">
+                                                <div className="p-1.5 bg-neutral-100 rounded-md mr-3">
+                                                    <Icon className="text-xs text-neutral-600" />
+                                                </div>
+                                                <span className="text-xs font-medium text-neutral-800">{skill.name}</span>
+                                            </div>
+                                        );
+                                    })}
+                                    {skills.length > 5 && (
+                                        <div className="text-center pt-2">
+                                            <span className="text-[10px] text-neutral-400">and more...</span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                         {/* Notch */}

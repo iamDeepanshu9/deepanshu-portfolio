@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useData, Skill, Project, Blog } from "../context/DataContext";
+import { useData, Skill, Project, Blog, Testimonial } from "../context/DataContext";
 import { motion } from "framer-motion";
 
 export default function AdminPage() {
@@ -9,12 +9,13 @@ export default function AdminPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [activeTab, setActiveTab] = useState<"skills" | "projects" | "blogs">("skills");
+    const [activeTab, setActiveTab] = useState<"skills" | "projects" | "blogs" | "testimonials">("skills");
 
     const {
         skills,
         projects,
         blogs,
+        testimonials,
         addSkill,
         updateSkill,
         deleteSkill,
@@ -24,6 +25,9 @@ export default function AdminPage() {
         addBlog,
         updateBlog,
         deleteBlog,
+        addTestimonial,
+        updateTestimonial,
+        deleteTestimonial,
     } = useData();
 
     // Simple Login Logic
@@ -91,7 +95,7 @@ export default function AdminPage() {
 
                 {/* Tabs */}
                 <div className="flex space-x-4 mb-8 border-b border-gray-300">
-                    {(["skills", "projects", "blogs"] as const).map((tab) => (
+                    {(["skills", "projects", "blogs", "testimonials"] as const).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -133,6 +137,14 @@ export default function AdminPage() {
                             addBlog={addBlog}
                             updateBlog={updateBlog}
                             deleteBlog={deleteBlog}
+                        />
+                    )}
+                    {activeTab === "testimonials" && (
+                        <TestimonialsManager
+                            testimonials={testimonials}
+                            addTestimonial={addTestimonial}
+                            updateTestimonial={updateTestimonial}
+                            deleteTestimonial={deleteTestimonial}
                         />
                     )}
                 </div>
@@ -522,6 +534,129 @@ function BlogsManager({
                             </button>
                             <button
                                 onClick={() => deleteBlog(blog.id)}
+                                className="text-red-600 hover:text-red-800 text-sm font-medium"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function TestimonialsManager({
+    testimonials,
+    addTestimonial,
+    updateTestimonial,
+    deleteTestimonial,
+}: {
+    testimonials: Testimonial[];
+    addTestimonial: (t: any) => void;
+    updateTestimonial: (id: string, t: any) => void;
+    deleteTestimonial: (id: string) => void;
+}) {
+    const [form, setForm] = useState({
+        text: "",
+        author: "",
+        role: "",
+    });
+    const [editingId, setEditingId] = useState<string | null>(null);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (form.text && form.author) {
+            if (editingId) {
+                updateTestimonial(editingId, form);
+                setEditingId(null);
+            } else {
+                addTestimonial(form);
+            }
+            setForm({ text: "", author: "", role: "" });
+        }
+    };
+
+    const handleEdit = (testimonial: Testimonial) => {
+        setForm({
+            text: testimonial.text,
+            author: testimonial.author,
+            role: testimonial.role,
+        });
+        setEditingId(testimonial.id);
+    };
+
+    const handleCancel = () => {
+        setEditingId(null);
+        setForm({ text: "", author: "", role: "" });
+    };
+
+    return (
+        <div>
+            <h3 className="text-xl font-bold mb-6 text-black">
+                {editingId ? "Edit Testimonial" : "Add New Testimonial"}
+            </h3>
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 mb-8">
+                <textarea
+                    placeholder="Testimonial Text"
+                    value={form.text}
+                    onChange={(e) => setForm({ ...form, text: e.target.value })}
+                    className="px-4 py-2 border border-gray-400 rounded-lg h-24 text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
+                />
+                <div className="flex gap-4">
+                    <input
+                        type="text"
+                        placeholder="Author Name"
+                        value={form.author}
+                        onChange={(e) => setForm({ ...form, author: e.target.value })}
+                        className="flex-1 px-4 py-2 border border-gray-400 rounded-lg text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Role / Company"
+                        value={form.author}
+                        onChange={(e) => setForm({ ...form, role: e.target.value })}
+                        className="flex-1 px-4 py-2 border border-gray-400 rounded-lg text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
+                    />
+                </div>
+                <div className="flex gap-4">
+                    <button
+                        type="submit"
+                        className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 font-medium"
+                    >
+                        {editingId ? "Update" : "Add"}
+                    </button>
+                    {editingId && (
+                        <button
+                            type="button"
+                            onClick={handleCancel}
+                            className="px-6 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300 font-medium"
+                        >
+                            Cancel
+                        </button>
+                    )}
+                </div>
+            </form>
+
+            <div className="space-y-4">
+                {testimonials.map((testimonial) => (
+                    <div
+                        key={testimonial.id}
+                        className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-white hover:shadow-sm transition-all"
+                    >
+                        <div className="flex-1 mr-4">
+                            <p className="text-gray-800 italic mb-1">"{testimonial.text.substring(0, 100)}{testimonial.text.length > 100 ? "..." : ""}"</p>
+                            <p className="text-sm font-bold text-gray-900">{testimonial.author} <span className="font-normal text-gray-500">- {testimonial.role}</span></p>
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => handleEdit(testimonial)}
+                                className="text-blue-700 hover:text-blue-900 text-sm font-medium"
+                            >
+                                Edit
+                            </button>
+                            <button
+                                onClick={() => deleteTestimonial(testimonial.id)}
                                 className="text-red-600 hover:text-red-800 text-sm font-medium"
                             >
                                 Delete

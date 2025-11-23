@@ -13,7 +13,7 @@ export default function Blog() {
 
             <div className="container mx-auto px-4 mt-16">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {blogs.map((blog, index) => (
+                    {blogs.slice(0, 3).map((blog, index) => (
                         <motion.article
                             key={blog.id}
                             initial={{ opacity: 0, y: 20 }}
@@ -56,6 +56,15 @@ export default function Blog() {
                             </div>
                         </motion.article>
                     ))}
+                </div>
+
+                <div className="mt-16 text-center">
+                    <a
+                        href="/blogs"
+                        className="inline-block px-8 py-3 bg-black text-white font-medium rounded-full hover:bg-neutral-800 transition-colors"
+                    >
+                        View All Blogs
+                    </a>
                 </div>
             </div>
         </section>

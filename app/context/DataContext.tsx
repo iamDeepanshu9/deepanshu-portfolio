@@ -41,6 +41,13 @@ export type Blog = {
     comments: Comment[];
 };
 
+export type Testimonial = {
+    id: string;
+    text: string;
+    author: string;
+    role: string;
+};
+
 interface DataContextType {
     skills: Skill[];
     projects: Project[];
@@ -56,6 +63,10 @@ interface DataContextType {
     deleteBlog: (id: string) => void;
     likeBlog: (id: string) => void;
     addComment: (blogId: string, comment: Omit<Comment, "id" | "date">) => void;
+    testimonials: Testimonial[];
+    addTestimonial: (testimonial: Omit<Testimonial, "id">) => void;
+    updateTestimonial: (id: string, testimonial: Partial<Testimonial>) => void;
+    deleteTestimonial: (id: string) => void;
 }
 
 // --- Default Data ---
@@ -184,6 +195,15 @@ const defaultBlogs: Blog[] = [
     },
 ];
 
+const defaultTestimonials: Testimonial[] = [
+    {
+        id: "1",
+        text: "Deepanshu was an excellent and valued member of my team... His knowledge particularly with respect to Angular was vast.",
+        author: "John Newton",
+        role: "Zinc Systems",
+    },
+];
+
 // --- Context ---
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -192,6 +212,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     const [skills, setSkills] = useState<Skill[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
     const [blogs, setBlogs] = useState<Blog[]>([]);
+    const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
 
     // Load from LocalStorage on mount
@@ -200,6 +221,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
             const storedSkills = localStorage.getItem("portfolio_skills");
             const storedProjects = localStorage.getItem("portfolio_projects");
             const storedBlogs = localStorage.getItem("portfolio_blogs");
+            const storedTestimonials = localStorage.getItem("portfolio_testimonials");
 
             if (storedSkills) {
                 setSkills(JSON.parse(storedSkills));
@@ -220,6 +242,13 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
             } else {
                 setBlogs(defaultBlogs);
                 localStorage.setItem("portfolio_blogs", JSON.stringify(defaultBlogs));
+            }
+
+            if (storedTestimonials) {
+                setTestimonials(JSON.parse(storedTestimonials));
+            } else {
+                setTestimonials(defaultTestimonials);
+                localStorage.setItem("portfolio_testimonials", JSON.stringify(defaultTestimonials));
             }
             setIsLoaded(true);
         };
@@ -245,6 +274,12 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
             localStorage.setItem("portfolio_blogs", JSON.stringify(blogs));
         }
     }, [blogs, isLoaded]);
+
+    useEffect(() => {
+        if (isLoaded) {
+            localStorage.setItem("portfolio_testimonials", JSON.stringify(testimonials));
+        }
+    }, [testimonials, isLoaded]);
 
     // --- Actions ---
 
@@ -321,12 +356,28 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         );
     };
 
+    const addTestimonial = (testimonial: Omit<Testimonial, "id">) => {
+        const newTestimonial = { ...testimonial, id: Date.now().toString() };
+        setTestimonials((prev) => [...prev, newTestimonial]);
+    };
+
+    const updateTestimonial = (id: string, updatedTestimonial: Partial<Testimonial>) => {
+        setTestimonials((prev) =>
+            prev.map((t) => (t.id === id ? { ...t, ...updatedTestimonial } : t))
+        );
+    };
+
+    const deleteTestimonial = (id: string) => {
+        setTestimonials((prev) => prev.filter((t) => t.id !== id));
+    };
+
     return (
         <DataContext.Provider
             value={{
                 skills,
                 projects,
                 blogs,
+                testimonials,
                 addSkill,
                 updateSkill,
                 deleteSkill,
@@ -338,6 +389,9 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
                 deleteBlog,
                 likeBlog,
                 addComment,
+                addTestimonial,
+                updateTestimonial,
+                deleteTestimonial,
             }}
         >
             {children}

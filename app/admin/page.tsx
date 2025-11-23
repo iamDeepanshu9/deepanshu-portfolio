@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { useData, Skill, Project, Blog, Testimonial } from "../context/DataContext";
 import { motion } from "framer-motion";
+import { supabase } from "../lib/supabaseClient";
 
 export default function AdminPage() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [username, setUsername] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [activeTab, setActiveTab] = useState<"skills" | "projects" | "blogs" | "testimonials">("skills");
@@ -30,16 +32,49 @@ export default function AdminPage() {
         deleteTestimonial,
     } = useData();
 
-    // Simple Login Logic
-    const handleLogin = (e: React.FormEvent) => {
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            setIsAuthenticated(!!session);
+            setIsLoading(false);
+        };
+
+        checkSession();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setIsAuthenticated(!!session);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (username === "admin" && password === "admin123") {
-            setIsAuthenticated(true);
-            setError("");
-        } else {
-            setError("Invalid credentials");
+        setIsLoading(true);
+        setError("");
+
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (error) {
+            setError(error.message);
         }
+        setIsLoading(false);
     };
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+    };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+            </div>
+        );
+    }
 
     if (!isAuthenticated) {
         return (
@@ -48,13 +83,13 @@ export default function AdminPage() {
                     <h2 className="text-2xl font-serif font-bold text-center mb-6 text-black">Admin Login</h2>
                     <form onSubmit={handleLogin} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-bold text-gray-800 mb-1">Username</label>
+                            <label className="block text-sm font-bold text-gray-800 mb-1">Email</label>
                             <input
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-400 rounded-lg text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
-                                placeholder="Enter username"
+                                placeholder="Enter email"
                             />
                         </div>
                         <div>
@@ -71,8 +106,9 @@ export default function AdminPage() {
                         <button
                             type="submit"
                             className="w-full py-3 bg-black text-white rounded-lg font-bold hover:bg-gray-800 transition-colors"
+                            disabled={isLoading}
                         >
-                            Login
+                            {isLoading ? "Logging in..." : "Login"}
                         </button>
                     </form>
                 </div>
@@ -86,7 +122,7 @@ export default function AdminPage() {
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-serif font-bold text-black">Admin Dashboard</h1>
                     <button
-                        onClick={() => setIsAuthenticated(false)}
+                        onClick={handleLogout}
                         className="px-4 py-2 text-sm text-red-700 hover:bg-red-100 rounded-lg transition-colors font-medium"
                     >
                         Logout

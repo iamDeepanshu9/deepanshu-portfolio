@@ -104,9 +104,12 @@ export default function Hero() {
                     >
                         View Projects
                     </a>
-                    <button className="px-8 py-4 bg-white text-black border border-neutral-200 rounded-full font-medium hover:bg-neutral-50 transition-all duration-300 w-full sm:w-auto">
+                    <a
+                        href="#contact"
+                        className="px-8 py-4 bg-white text-black border border-neutral-200 rounded-full font-medium hover:bg-neutral-50 transition-all duration-300 w-full sm:w-auto text-center"
+                    >
                         Contact Me
-                    </button>
+                    </a>
                 </motion.div>
             </div>
         </section>

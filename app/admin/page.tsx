@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useData, Skill, Project, Blog, Testimonial } from "../context/DataContext";
 import { motion } from "framer-motion";
 import { supabase } from "../lib/supabaseClient";
 
 export default function AdminPage() {
+    const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [email, setEmail] = useState("");
@@ -66,6 +68,7 @@ export default function AdminPage() {
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
+        router.push("/");
     };
 
     if (isLoading) {
@@ -206,6 +209,9 @@ function SkillsManager({
     const [category, setCategory] = useState("");
     const [editingId, setEditingId] = useState<string | null>(null);
 
+    // Extract unique categories for suggestions
+    const existingCategories = Array.from(new Set(skills.map((s) => s.category).filter(Boolean)));
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (name && category) {
@@ -250,8 +256,14 @@ function SkillsManager({
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     placeholder="Category (e.g. Frontend)"
+                    list="category-suggestions"
                     className="flex-1 px-4 py-2 border border-gray-400 rounded-lg text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
                 />
+                <datalist id="category-suggestions">
+                    {existingCategories.map((cat) => (
+                        <option key={cat} value={cat} />
+                    ))}
+                </datalist>
                 <button
                     type="submit"
                     className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 font-medium"

@@ -203,33 +203,33 @@ function SkillsManager({
     deleteSkill: (id: string) => void;
 }) {
     const [name, setName] = useState("");
-    const [iconName, setIconName] = useState("FaReact");
+    const [category, setCategory] = useState("");
     const [editingId, setEditingId] = useState<string | null>(null);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (name) {
+        if (name && category) {
             if (editingId) {
-                updateSkill(editingId, { name, iconName });
+                updateSkill(editingId, { name, category });
                 setEditingId(null);
             } else {
-                addSkill({ name, iconName });
+                addSkill({ name, category });
             }
             setName("");
-            setIconName("FaReact");
+            setCategory("");
         }
     };
 
     const handleEdit = (skill: Skill) => {
         setName(skill.name);
-        setIconName(skill.iconName);
+        setCategory(skill.category || "");
         setEditingId(skill.id);
     };
 
     const handleCancel = () => {
         setEditingId(null);
         setName("");
-        setIconName("FaReact");
+        setCategory("");
     };
 
     return (
@@ -245,18 +245,13 @@ function SkillsManager({
                     placeholder="Skill Name"
                     className="flex-1 px-4 py-2 border border-gray-400 rounded-lg text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
                 />
-                <select
-                    value={iconName}
-                    onChange={(e) => setIconName(e.target.value)}
-                    className="px-4 py-2 border border-gray-400 rounded-lg text-black focus:ring-2 focus:ring-black focus:border-transparent outline-none"
-                >
-                    <option value="FaReact">React</option>
-                    <option value="FaAngular">Angular</option>
-                    <option value="FaNodeJs">Node.js</option>
-                    <option value="SiNextdotjs">Next.js</option>
-                    <option value="SiTypescript">TypeScript</option>
-                    <option value="SiTailwindcss">Tailwind</option>
-                </select>
+                <input
+                    type="text"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    placeholder="Category (e.g. Frontend)"
+                    className="flex-1 px-4 py-2 border border-gray-400 rounded-lg text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
+                />
                 <button
                     type="submit"
                     className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 font-medium"
@@ -280,7 +275,10 @@ function SkillsManager({
                         key={skill.id}
                         className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-white hover:shadow-sm transition-all"
                     >
-                        <span className="font-bold text-gray-800">{skill.name}</span>
+                        <div>
+                            <p className="font-bold text-gray-800">{skill.name}</p>
+                            <p className="text-xs text-gray-500">{skill.category}</p>
+                        </div>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => handleEdit(skill)}

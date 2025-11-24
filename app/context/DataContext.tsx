@@ -10,7 +10,7 @@ import { supabase } from "../lib/supabaseClient";
 export type Skill = {
     id: string;
     name: string;
-    iconName: string;
+    category: string;
 };
 
 export type Project = {
@@ -70,8 +70,6 @@ interface DataContextType {
     deleteTestimonial: (id: string) => void;
 }
 
-
-
 // --- Context ---
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -90,7 +88,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
             // Skills
             const { data: skillsData } = await supabase.from("skills").select("*").order("created_at", { ascending: true });
             if (skillsData) {
-                setSkills(skillsData.map((s: any) => ({ ...s, iconName: s.icon_name })));
+                setSkills(skillsData);
             }
 
             // Projects
@@ -132,25 +130,19 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     const addSkill = async (skill: Omit<Skill, "id">) => {
         const { data, error } = await supabase
             .from("skills")
-            .insert([{ name: skill.name, icon_name: skill.iconName }])
+            .insert([{ name: skill.name, category: skill.category }])
             .select()
             .single();
 
         if (data && !error) {
-            setSkills((prev) => [...prev, { ...data, iconName: data.icon_name }]);
+            setSkills((prev) => [...prev, data]);
         } else {
             console.error("Error adding skill:", error);
         }
     };
 
     const updateSkill = async (id: string, updatedSkill: Partial<Skill>) => {
-        const updatePayload: any = { ...updatedSkill };
-        if (updatedSkill.iconName) {
-            updatePayload.icon_name = updatedSkill.iconName;
-            delete updatePayload.iconName;
-        }
-
-        const { error } = await supabase.from("skills").update(updatePayload).eq("id", id);
+        const { error } = await supabase.from("skills").update(updatedSkill).eq("id", id);
 
         if (!error) {
             setSkills((prev) =>

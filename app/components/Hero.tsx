@@ -15,17 +15,29 @@ export default function Hero() {
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="w-full md:w-1/2 h-[50vh] md:h-screen bg-neutral-100 flex items-center justify-center relative"
+                className="w-full md:w-1/2 h-[150vh] md:h-screen bg-neutral-100 flex items-center justify-center relative"
             >
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200" />
                 <div className="relative w-full h-full">
-                    <Image
+                    {/* <Image
                         src="/images/dipu2.png"
                         alt="Deepanshu Kumar"
                         fill
                         className="object-cover object-center"
                         priority
-                    />
+                    /> */}
+                    <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+      >
+        
+        <source src="/images/doodle.mp4" type="video/mp4" />
+        {/* fallback text */}
+        
+      </video>
                 </div>
             </motion.div>
 
@@ -71,7 +83,7 @@ export default function Hero() {
                     transition={{ duration: 0.6, delay: 0.2 }}
                     className="text-sm md:text-base font-sans font-medium tracking-[0.3em] text-gray-500 uppercase mb-4"
                 >
-                    Software Developer
+                    SDE2- Remotestate
                 </motion.span>
 
                 <motion.h1
@@ -87,9 +99,9 @@ export default function Hero() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-                    className="text-xl md:text-2xl text-neutral-600 font-sans font-light mb-10 tracking-wide max-w-lg"
+                    className="text-l md:text-xl text-neutral-600 font-sans font-light mb-10 tracking-wide max-w-lg"
                 >
-                    Software Developer & UI/UX Enthusiast specializing in Angular, React, and Next.js.
+                I'm a software developer with over 4 years of experience in front-end, full-stack, and backend development. I specialize in Angular, React, Next.js, Node.js, and PostgreSQL, with hands-on expertise in building scalable applications, mentoring teams, and optimizing performance. I’m always learning and exploring new technologies to deliver better products.
                 </motion.p>
 
                 <motion.div

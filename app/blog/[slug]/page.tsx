@@ -8,16 +8,39 @@ import Link from "next/link";
 
 export default function BlogDetail() {
     const { slug } = useParams();
-    const { blogs, likeBlog, addComment } = useData();
+    const { blogs, likeBlog, addComment, isLoading } = useData();
     const blog = blogs.find((b) => b.slug === slug);
 
     const [commentText, setCommentText] = useState("");
     const [userName, setUserName] = useState("");
 
+    // Show loading state while data is being fetched
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-black mx-auto mb-4"></div>
+                    <p className="text-neutral-600 font-medium">Loading article...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Show not found state if blog doesn't exist
     if (!blog) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <p>Blog not found.</p>
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <div className="text-center max-w-md px-4">
+                    <h1 className="text-6xl font-serif font-bold text-neutral-900 mb-4">404</h1>
+                    <p className="text-xl text-neutral-600 mb-8">Article not found</p>
+                    <p className="text-neutral-500 mb-8">The article you're looking for doesn't exist or has been removed.</p>
+                    <Link
+                        href="/blogs"
+                        className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:bg-neutral-800 transition-colors font-medium"
+                    >
+                        ← Back to All Articles
+                    </Link>
+                </div>
             </div>
         );
     }
@@ -127,7 +150,7 @@ export default function BlogDetail() {
 
                     {/* Comments Section */}
                     <section>
-                        <h3 className="text-2xl font-bold mb-8">Comments ({blog.comments?.length || 0})</h3>
+                        <h3 className="text-2xl font-bold mb-8">Comments ({blog.comments?.filter(c => !c.hidden).length || 0})</h3>
 
                         {/* Comment Form */}
                         <form onSubmit={handleCommentSubmit} className="mb-12 bg-neutral-50 p-6 rounded-xl">
@@ -162,7 +185,7 @@ export default function BlogDetail() {
 
                         {/* Comments List */}
                         <div className="space-y-6">
-                            {blog.comments?.map((comment) => (
+                            {blog.comments?.filter(c => !c.hidden).map((comment) => (
                                 <div key={comment.id} className="border-b border-neutral-100 pb-6 last:border-0">
                                     <div className="flex justify-between items-center mb-2">
                                         <h4 className="font-bold text-neutral-900">{comment.user}</h4>
@@ -171,7 +194,7 @@ export default function BlogDetail() {
                                     <p className="text-neutral-600">{comment.text}</p>
                                 </div>
                             ))}
-                            {(!blog.comments || blog.comments.length === 0) && (
+                            {(!blog.comments || blog.comments.filter(c => !c.hidden).length === 0) && (
                                 <p className="text-neutral-400 italic">No comments yet. Be the first to share!</p>
                             )}
                         </div>

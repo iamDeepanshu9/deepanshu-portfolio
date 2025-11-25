@@ -27,6 +27,7 @@ export type Comment = {
     user: string;
     text: string;
     date: string;
+    hidden?: boolean;
 };
 
 export type Blog = {
@@ -53,6 +54,8 @@ interface DataContextType {
     skills: Skill[];
     projects: Project[];
     blogs: Blog[];
+    testimonials: Testimonial[];
+    isLoading: boolean;
     addSkill: (skill: Omit<Skill, "id">) => void;
     updateSkill: (id: string, skill: Partial<Skill>) => void;
     deleteSkill: (id: string) => void;
@@ -64,7 +67,7 @@ interface DataContextType {
     deleteBlog: (id: string) => void;
     likeBlog: (id: string) => void;
     addComment: (blogId: string, comment: Omit<Comment, "id" | "date">) => void;
-    testimonials: Testimonial[];
+    toggleCommentVisibility: (commentId: string, blogId: string) => void;
     addTestimonial: (testimonial: Omit<Testimonial, "id">) => void;
     updateTestimonial: (id: string, testimonial: Partial<Testimonial>) => void;
     deleteTestimonial: (id: string) => void;
@@ -79,11 +82,11 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [blogs, setBlogs] = useState<Blog[]>([]);
     const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Fetch data from Supabase
     const fetchData = async () => {
-        setIsLoaded(false);
+        setIsLoading(true);
         try {
             // Skills
             const { data: skillsData } = await supabase.from("skills").select("*").order("created_at", { ascending: true });
@@ -117,7 +120,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
-            setIsLoaded(true);
+            setIsLoading(false);
         }
     };
 
@@ -197,23 +200,44 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const addBlog = async (blog: Omit<Blog, "id" | "likes" | "comments">) => {
+        console.log("Adding blog with data:", blog);
+
+        // Transform readTime to read_time for database
+        const { readTime, ...blogData } = blog;
+        const insertData = {
+            ...blogData,
+            read_time: readTime
+        };
+
+        console.log("Inserting to database:", insertData);
+
         const { data, error } = await supabase
             .from("blogs")
-            .insert([{ ...blog, read_time: blog.readTime }])
+            .insert([insertData])
             .select()
             .single();
 
         if (data && !error) {
+            console.log("Blog added successfully:", data);
             setBlogs((prev) => [
                 { ...data, readTime: data.read_time, comments: [], likes: 0 },
                 ...prev,
             ]);
         } else {
             console.error("Error adding blog:", error);
+            console.error("Error details:", {
+                message: error?.message,
+                details: error?.details,
+                hint: error?.hint,
+                code: error?.code
+            });
+            throw error; // Re-throw so the UI can catch it
         }
     };
 
     const updateBlog = async (id: string, updatedBlog: Partial<Blog>) => {
+        console.log("Updating blog:", id, updatedBlog);
+
         const updatePayload: any = { ...updatedBlog };
         if (updatedBlog.readTime) {
             updatePayload.read_time = updatedBlog.readTime;
@@ -222,11 +246,19 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
         const { error } = await supabase.from("blogs").update(updatePayload).eq("id", id);
         if (!error) {
+            console.log("Blog updated successfully");
             setBlogs((prev) =>
                 prev.map((blog) => (blog.id === id ? { ...blog, ...updatedBlog } : blog))
             );
         } else {
             console.error("Error updating blog:", error);
+            console.error("Error details:", {
+                message: error?.message,
+                details: error?.details,
+                hint: error?.hint,
+                code: error?.code
+            });
+            throw error; // Re-throw so the UI can catch it
         }
     };
 
@@ -281,6 +313,38 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
+    const toggleCommentVisibility = async (commentId: string, blogId: string) => {
+        // Find the comment to get its current hidden status
+        const blog = blogs.find((b) => b.id === blogId);
+        const comment = blog?.comments.find((c) => c.id === commentId);
+
+        if (!comment) return;
+
+        const newHiddenStatus = !comment.hidden;
+
+        const { error } = await supabase
+            .from("comments")
+            .update({ hidden: newHiddenStatus })
+            .eq("id", commentId);
+
+        if (!error) {
+            setBlogs((prev) =>
+                prev.map((blog) =>
+                    blog.id === blogId
+                        ? {
+                            ...blog,
+                            comments: blog.comments.map((c) =>
+                                c.id === commentId ? { ...c, hidden: newHiddenStatus } : c
+                            )
+                        }
+                        : blog
+                )
+            );
+        } else {
+            console.error("Error toggling comment visibility:", error);
+        }
+    };
+
     const addTestimonial = async (testimonial: Omit<Testimonial, "id">) => {
         const { data, error } = await supabase
             .from("testimonials")
@@ -322,6 +386,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
                 projects,
                 blogs,
                 testimonials,
+                isLoading,
                 addSkill,
                 updateSkill,
                 deleteSkill,
@@ -333,6 +398,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
                 deleteBlog,
                 likeBlog,
                 addComment,
+                toggleCommentVisibility,
                 addTestimonial,
                 updateTestimonial,
                 deleteTestimonial,

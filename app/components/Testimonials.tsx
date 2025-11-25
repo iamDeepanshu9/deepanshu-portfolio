@@ -33,10 +33,10 @@ export default function Testimonials() {
                 onMouseEnter={() => setIsPaused(true)}
                 onMouseLeave={() => setIsPaused(false)}
             >
-                <div className="max-w-4xl mx-auto h-[400px] flex flex-col justify-center">
+                <div className="max-w-4xl mx-auto h-[450px] flex flex-col justify-center">
                     <FaQuoteLeft className="text-4xl md:text-5xl text-neutral-300 mx-auto mb-8" />
 
-                    <div className="relative h-[250px] flex items-center justify-center">
+                    <div className="relative h-[280px] flex items-center justify-center">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={currentIndex}
@@ -64,7 +64,7 @@ export default function Testimonials() {
 
                     {/* Dots Navigation */}
                     {testimonials.length > 1 && (
-                        <div className="flex justify-center space-x-2 mt-8">
+                        <div className="flex justify-center space-x-2 mt-10">
                             {testimonials.map((_, index) => (
                                 <button
                                     key={index}

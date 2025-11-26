@@ -16,7 +16,7 @@ export default function AdminPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [activeTab, setActiveTab] = useState<"skills" | "projects" | "blogs" | "testimonials">("skills");
+    const [activeTab, setActiveTab] = useState<"skills" | "projects" | "blogs" | "testimonials" | "contacts">("skills");
 
     const {
         skills,
@@ -137,12 +137,12 @@ export default function AdminPage() {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex space-x-4 mb-8 border-b border-gray-300">
-                    {(["skills", "projects", "blogs", "testimonials"] as const).map((tab) => (
+                <div className="flex space-x-4 mb-8 border-b border-gray-300 overflow-x-auto">
+                    {(["skills", "projects", "blogs", "testimonials", "contacts"] as const).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`pb-4 px-4 text-sm font-bold capitalize transition-colors relative ${activeTab === tab ? "text-black" : "text-gray-600 hover:text-black"
+                            className={`pb-4 px-4 text-sm font-bold capitalize transition-colors relative whitespace-nowrap ${activeTab === tab ? "text-black" : "text-gray-600 hover:text-black"
                                 }`}
                         >
                             {tab}
@@ -191,6 +191,9 @@ export default function AdminPage() {
                             deleteTestimonial={deleteTestimonial}
                         />
                     )}
+                    {activeTab === "contacts" && (
+                        <ContactsManager />
+                    )}
                 </div>
             </div>
         </div>
@@ -198,6 +201,111 @@ export default function AdminPage() {
 }
 
 // --- Sub-components for Management ---
+
+function ContactsManager() {
+    const [contacts, setContacts] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id: string; name: string }>({
+        isOpen: false,
+        id: "",
+        name: "",
+    });
+
+    const fetchContacts = async () => {
+        setIsLoading(true);
+        const { data, error } = await supabase
+            .from("contacts")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (data) {
+            setContacts(data);
+        } else {
+            console.error("Error fetching contacts:", error);
+        }
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        fetchContacts();
+    }, []);
+
+    const deleteContact = async (id: string) => {
+        const { error } = await supabase.from("contacts").delete().eq("id", id);
+        if (!error) {
+            setContacts((prev) => prev.filter((c) => c.id !== id));
+        } else {
+            console.error("Error deleting contact:", error);
+        }
+    };
+
+    if (isLoading) {
+        return <div className="text-center py-8">Loading contacts...</div>;
+    }
+
+    return (
+        <div>
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-black">Contact Submissions</h3>
+                <button
+                    onClick={fetchContacts}
+                    className="text-sm text-gray-600 hover:text-black underline"
+                >
+                    Refresh
+                </button>
+            </div>
+
+            {contacts.length === 0 ? (
+                <p className="text-gray-500 italic text-center py-8">No contact submissions yet.</p>
+            ) : (
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="border-b border-gray-200">
+                                <th className="py-3 px-4 font-bold text-gray-700">Date</th>
+                                <th className="py-3 px-4 font-bold text-gray-700">Name</th>
+                                <th className="py-3 px-4 font-bold text-gray-700">Email</th>
+                                <th className="py-3 px-4 font-bold text-gray-700">Project/Idea</th>
+                                <th className="py-3 px-4 font-bold text-gray-700 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {contacts.map((contact) => (
+                                <tr key={contact.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                    <td className="py-3 px-4 text-gray-600 text-sm">
+                                        {new Date(contact.created_at).toLocaleDateString()}
+                                    </td>
+                                    <td className="py-3 px-4 text-gray-900 font-medium">{contact.name}</td>
+                                    <td className="py-3 px-4 text-gray-600">
+                                        <a href={`mailto:${contact.email}`} className="hover:underline hover:text-blue-600">
+                                            {contact.email}
+                                        </a>
+                                    </td>
+                                    <td className="py-3 px-4 text-gray-800">{contact.project}</td>
+                                    <td className="py-3 px-4 text-right">
+                                        <button
+                                            onClick={() => setDeleteConfirm({ isOpen: true, id: contact.id, name: `Message from ${contact.name}` })}
+                                            className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            <ConfirmDeleteModal
+                isOpen={deleteConfirm.isOpen}
+                onClose={() => setDeleteConfirm({ isOpen: false, id: "", name: "" })}
+                onConfirm={() => deleteContact(deleteConfirm.id)}
+                itemName={deleteConfirm.name}
+            />
+        </div>
+    );
+}
 
 function SkillsManager({
     skills,

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useData } from "../context/DataContext";
+import { FaLinkedin, FaGithub } from "react-icons/fa";
 
 export default function Hero() {
   const { blogs } = useData();
@@ -31,7 +32,7 @@ export default function Hero() {
             loop
             muted
             playsInline
-            style={{ width: "100%", height: "100%", objectFit: "cover",}}
+            style={{ width: "100%", height: "100%", objectFit: "cover", }}
           >
             <source src="/images/doodle.mp4" type="video/mp4" />
             {/* fallback text */}
@@ -107,12 +108,15 @@ export default function Hero() {
           technologies to deliver better products.
         </motion.p>
 
+        {/* Social Links */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="flex flex-col sm:flex-row items-center gap-4"
+          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          className="flex items-center justify-center sm:justify-start gap-4 mb-10"
         >
+
+
           <a
             href="#portfolio"
             className="px-8 py-4 bg-black text-white rounded-full font-medium hover:bg-neutral-800 transition-all duration-300 shadow-lg hover:shadow-xl w-full sm:w-auto text-center"
@@ -124,6 +128,22 @@ export default function Hero() {
             className="px-8 py-4 bg-white text-black border border-neutral-200 rounded-full font-medium hover:bg-neutral-50 transition-all duration-300 w-full sm:w-auto text-center"
           >
             Contact Me
+          </a>
+          <a
+            href="https://www.linkedin.com/in/iamdeepanshu9/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center justify-center w-12 h-12 rounded-full border-2 border-neutral-300 hover:border-black transition-all duration-300 hover:scale-110"
+          >
+            <FaLinkedin className="text-xl text-neutral-600 group-hover:text-black transition-colors duration-300" />
+          </a>
+          <a
+            href="https://github.com/iamDeepanshu9"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center justify-center w-12 h-12 rounded-full border-2 border-neutral-300 hover:border-black transition-all duration-300 hover:scale-110"
+          >
+            <FaGithub className="text-xl text-neutral-600 group-hover:text-black transition-colors duration-300" />
           </a>
         </motion.div>
       </div>

@@ -6,6 +6,56 @@ import { useData, Skill, Project, Blog, Testimonial } from "../context/DataConte
 import { motion } from "framer-motion";
 import { supabase } from "../lib/supabaseClient";
 
+// Reusable Confirmation Modal Component
+function ConfirmDeleteModal({
+    isOpen,
+    onClose,
+    onConfirm,
+    itemName,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+    itemName: string;
+}) {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+            >
+                <div className="mb-4">
+                    <h3 className="text-xl font-bold text-black mb-2">Confirm Delete</h3>
+                    <p className="text-gray-700">
+                        Are you sure you want to delete <span className="font-bold">"{itemName}"</span>?
+                    </p>
+                    <p className="text-sm text-gray-500 mt-2">This action cannot be undone.</p>
+                </div>
+                <div className="flex gap-3 justify-end">
+                    <button
+                        onClick={onClose}
+                        className="px-6 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300 font-medium transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={() => {
+                            onConfirm();
+                            onClose();
+                        }}
+                        className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"
+                    >
+                        Delete
+                    </button>
+                </div>
+            </motion.div>
+        </div>
+    );
+}
+
 export default function AdminPage() {
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -210,6 +260,11 @@ function SkillsManager({
     const [name, setName] = useState("");
     const [category, setCategory] = useState("");
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id: string; name: string }>({
+        isOpen: false,
+        id: "",
+        name: "",
+    });
 
     // Extract unique categories for suggestions
     const existingCategories = Array.from(new Set(skills.map((s) => s.category).filter(Boolean)));
@@ -301,7 +356,7 @@ function SkillsManager({
                                 Edit
                             </button>
                             <button
-                                onClick={() => deleteSkill(skill.id)}
+                                onClick={() => setDeleteConfirm({ isOpen: true, id: skill.id, name: skill.name })}
                                 className="text-red-600 hover:text-red-800 text-sm font-medium"
                             >
                                 Delete
@@ -310,6 +365,13 @@ function SkillsManager({
                     </div>
                 ))}
             </div>
+
+            <ConfirmDeleteModal
+                isOpen={deleteConfirm.isOpen}
+                onClose={() => setDeleteConfirm({ isOpen: false, id: "", name: "" })}
+                onConfirm={() => deleteSkill(deleteConfirm.id)}
+                itemName={deleteConfirm.name}
+            />
         </div>
     );
 }
@@ -332,6 +394,11 @@ function ProjectsManager({
         description: "",
     });
     const [editingId, setEditingId] = useState<number | null>(null);
+    const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id: number; name: string }>({
+        isOpen: false,
+        id: 0,
+        name: "",
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -431,7 +498,7 @@ function ProjectsManager({
                                 Edit
                             </button>
                             <button
-                                onClick={() => deleteProject(project.id)}
+                                onClick={() => setDeleteConfirm({ isOpen: true, id: project.id, name: project.title })}
                                 className="text-red-600 hover:text-red-800 text-sm font-medium"
                             >
                                 Delete
@@ -440,6 +507,13 @@ function ProjectsManager({
                     </div>
                 ))}
             </div>
+
+            <ConfirmDeleteModal
+                isOpen={deleteConfirm.isOpen}
+                onClose={() => setDeleteConfirm({ isOpen: false, id: 0, name: "" })}
+                onConfirm={() => deleteProject(deleteConfirm.id)}
+                itemName={deleteConfirm.name}
+            />
         </div>
     );
 }
@@ -470,6 +544,11 @@ function BlogsManager({
     const [success, setSuccess] = useState("");
     const [showCommentsModal, setShowCommentsModal] = useState(false);
     const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
+    const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id: string; name: string }>({
+        isOpen: false,
+        id: "",
+        name: "",
+    });
 
     // Set default date on client side only to avoid hydration mismatch
     useEffect(() => {
@@ -670,7 +749,7 @@ function BlogsManager({
                                 Edit
                             </button>
                             <button
-                                onClick={() => deleteBlog(blog.id)}
+                                onClick={() => setDeleteConfirm({ isOpen: true, id: blog.id, name: blog.title })}
                                 className="text-red-600 hover:text-red-800 text-sm font-medium"
                             >
                                 Delete
@@ -730,8 +809,8 @@ function BlogsManager({
                                                         toggleCommentVisibility(comment.id, selectedBlog.id);
                                                     }}
                                                     className={`p-2 rounded-lg transition-colors ${comment.hidden
-                                                            ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-                                                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                                                        ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                                                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                                                         }`}
                                                     title={comment.hidden ? 'Show comment' : 'Hide comment'}
                                                 >
@@ -774,6 +853,13 @@ function BlogsManager({
                     </div>
                 </div>
             )}
+
+            <ConfirmDeleteModal
+                isOpen={deleteConfirm.isOpen}
+                onClose={() => setDeleteConfirm({ isOpen: false, id: "", name: "" })}
+                onConfirm={() => deleteBlog(deleteConfirm.id)}
+                itemName={deleteConfirm.name}
+            />
         </div>
     );
 }
@@ -795,6 +881,11 @@ function TestimonialsManager({
         role: "",
     });
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id: string; name: string }>({
+        isOpen: false,
+        id: "",
+        name: "",
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -888,7 +979,7 @@ function TestimonialsManager({
                                 Edit
                             </button>
                             <button
-                                onClick={() => deleteTestimonial(testimonial.id)}
+                                onClick={() => setDeleteConfirm({ isOpen: true, id: testimonial.id, name: testimonial.author })}
                                 className="text-red-600 hover:text-red-800 text-sm font-medium"
                             >
                                 Delete
@@ -897,6 +988,13 @@ function TestimonialsManager({
                     </div>
                 ))}
             </div>
+
+            <ConfirmDeleteModal
+                isOpen={deleteConfirm.isOpen}
+                onClose={() => setDeleteConfirm({ isOpen: false, id: "", name: "" })}
+                onConfirm={() => deleteTestimonial(deleteConfirm.id)}
+                itemName={deleteConfirm.name}
+            />
         </div>
     );
 }

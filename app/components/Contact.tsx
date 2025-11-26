@@ -40,11 +40,10 @@ export default function Contact() {
                 setStatus("idle");
                 setForm({ name: "", project: "", email: "" });
             }, 5000);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error submitting contact form:", error);
             setStatus("idle");
-            // You might want to add an error state/message here
-            alert("Failed to send message. Please try again.");
+            alert(`Failed to send message: ${error.message || "Unknown error"}`);
         }
     };
 
@@ -85,20 +84,38 @@ export default function Contact() {
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
                                 transition={{ duration: 0.5 }}
-                                className="flex flex-col items-center justify-center py-20 text-center"
+                                className="flex flex-col items-center justify-center py-20 text-center relative"
                             >
+                                {/* Background Glow */}
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full blur-3xl -z-10 animate-pulse"></div>
+
                                 <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
-                                    className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-8"
+                                    initial={{ scale: 0, rotate: -180 }}
+                                    animate={{ scale: 1, rotate: 0 }}
+                                    transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.1 }}
+                                    className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(255,255,255,0.3)]"
                                 >
-                                    <FaCheck className="text-white text-4xl" />
+                                    <FaCheck className="text-black text-4xl" />
                                 </motion.div>
-                                <h3 className="text-4xl md:text-5xl font-serif font-bold mb-4">Thank You!</h3>
-                                <p className="text-xl text-neutral-400 max-w-lg">
-                                    I've received your message and will get back to you as soon as possible.
-                                </p>
+
+                                <motion.h3
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.3 }}
+                                    className="text-5xl md:text-7xl font-serif font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-neutral-200 to-neutral-500"
+                                >
+                                    Thank You!
+                                </motion.h3>
+
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.5 }}
+                                    className="text-xl md:text-2xl text-neutral-400 max-w-lg leading-relaxed"
+                                >
+                                    Your message has been sent successfully.<br />
+                                    <span className="text-white text-lg mt-2 block">I'll be in touch soon.</span>
+                                </motion.p>
                             </motion.div>
                         ) : (
                             <motion.form

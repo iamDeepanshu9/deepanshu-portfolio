@@ -152,9 +152,9 @@ export default function Contact() {
                                                 setForm({ ...form, project: e.target.value });
                                                 handleInputResize(e);
                                             }}
-                                            placeholder="your idea"
+                                            placeholder="your project/idea"
                                             className="bg-transparent border-b-2 border-neutral-700 focus:border-white outline-none text-white placeholder-neutral-600 min-w-[200px] transition-colors text-center"
-                                            style={{ width: "200px" }}
+                                            style={{ width: "500px" }}
                                         />
                                         <span>.</span>
                                     </div>

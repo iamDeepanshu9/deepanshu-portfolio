@@ -28,6 +28,7 @@ export type Comment = {
     text: string;
     date: string;
     hidden?: boolean;
+    blogId?: string;
 };
 
 export type Blog = {
@@ -126,6 +127,79 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         fetchData();
+
+        // Real-time subscription for comments
+        const channel = supabase
+            .channel('realtime-comments')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'comments' },
+                (payload) => {
+                    console.log('Real-time comment change:', payload);
+                    const { eventType, new: newRecord, old: oldRecord } = payload;
+
+                    setBlogs((prevBlogs) => {
+                        return prevBlogs.map((blog) => {
+                            // Handle INSERT
+                            if (eventType === 'INSERT' && newRecord.blog_id === blog.id) {
+                                // Check if comment already exists to prevent duplicates
+                                if (blog.comments.some(c => c.id === newRecord.id)) {
+                                    return blog;
+                                }
+                                const newComment: Comment = {
+                                    id: newRecord.id,
+                                    user: newRecord.user,
+                                    text: newRecord.text,
+                                    date: newRecord.date,
+                                    hidden: newRecord.hidden,
+                                    blogId: newRecord.blog_id
+                                };
+                                return {
+                                    ...blog,
+                                    comments: [...blog.comments, newComment]
+                                };
+                            }
+
+                            // Handle UPDATE
+                            if (eventType === 'UPDATE') {
+                                // Check if this blog contains the comment being updated
+                                const commentIndex = blog.comments.findIndex(c => c.id === newRecord.id);
+                                if (commentIndex !== -1) {
+                                    const updatedComments = [...blog.comments];
+                                    updatedComments[commentIndex] = {
+                                        ...updatedComments[commentIndex],
+                                        user: newRecord.user,
+                                        text: newRecord.text,
+                                        date: newRecord.date,
+                                        hidden: newRecord.hidden,
+                                        blogId: newRecord.blog_id
+                                    };
+                                    return { ...blog, comments: updatedComments };
+                                }
+                            }
+
+                            // Handle DELETE
+                            if (eventType === 'DELETE') {
+                                // Check if this blog contains the comment being deleted
+                                const commentIndex = blog.comments.findIndex(c => c.id === oldRecord.id);
+                                if (commentIndex !== -1) {
+                                    return {
+                                        ...blog,
+                                        comments: blog.comments.filter(c => c.id !== oldRecord.id)
+                                    };
+                                }
+                            }
+
+                            return blog;
+                        });
+                    });
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     // --- Actions ---

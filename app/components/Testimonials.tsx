@@ -22,7 +22,7 @@ export default function Testimonials() {
     if (testimonials.length === 0) return null;
 
     return (
-        <section className="py-32 bg-neutral-50 flex items-center justify-center relative overflow-hidden">
+        <section className="py-32 bg-white flex items-center justify-center relative overflow-hidden">
             {/* Decorative background element */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-5 pointer-events-none">
                 <span className="absolute -top-20 -left-20 text-[20rem] font-serif text-black">“</span>

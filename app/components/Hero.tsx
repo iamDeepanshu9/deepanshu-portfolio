@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useData } from "../context/DataContext";
-import { FaLinkedin, FaGithub } from "react-icons/fa";
+import { FaLinkedin, FaGithub, FaArrowRight } from "react-icons/fa";
 
 export default function Hero() {
   const { blogs } = useData();
@@ -16,7 +16,7 @@ export default function Hero() {
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full md:w-1/2 h-[150vh] md:h-screen bg-neutral-100 flex items-center justify-center relative"
+        className="hidden md:flex w-full md:w-1/2 h-[150vh] md:h-screen bg-neutral-100 items-center justify-center relative"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200" />
         <div className="relative w-full h-full">
@@ -32,7 +32,7 @@ export default function Hero() {
             loop
             muted
             playsInline
-            style={{ width: "100%", height: "100%", objectFit: "cover", }}
+            className="w-full h-full object-cover"
           >
             <source src="/images/doodle.mp4" type="video/mp4" />
             {/* fallback text */}
@@ -113,38 +113,42 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          className="flex items-center justify-center sm:justify-start gap-4 mb-10"
+          className="flex flex-col sm:flex-row items-center sm:items-center justify-center sm:justify-start gap-4 mb-10 w-full sm:w-auto"
         >
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <a
+              href="#portfolio"
+              className="px-8 py-4 bg-black text-white rounded-full font-medium hover:bg-neutral-800 transition-all duration-300 shadow-lg hover:shadow-xl w-full sm:w-auto text-center"
+            >
+              View Projects
+            </a>
+            <a
+              href="#contact"
+              className="group relative px-8 py-4 bg-white text-black border-2 border-neutral-200 rounded-full font-medium hover:border-black transition-all duration-300 w-full sm:w-auto text-center flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
+            >
+              <span>Let's Connect</span>
+              <FaArrowRight className="text-sm transform group-hover:translate-x-1 transition-transform duration-300" />
+            </a>
+          </div>
 
-
-          <a
-            href="#portfolio"
-            className="px-8 py-4 bg-black text-white rounded-full font-medium hover:bg-neutral-800 transition-all duration-300 shadow-lg hover:shadow-xl w-full sm:w-auto text-center"
-          >
-            View Projects
-          </a>
-          <a
-            href="#contact"
-            className="px-8 py-4 bg-white text-black border-2 border-neutral-200 rounded-full font-medium hover:bg-neutral-50 hover:border-black transition-all duration-300 w-full sm:w-auto text-center"
-          >
-            Contact Me
-          </a>
-          <a
-            href="https://www.linkedin.com/in/iamdeepanshu9/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center justify-center w-12 h-12 rounded-full border-2 border-neutral-300 hover:border-black transition-all duration-300 hover:scale-110"
-          >
-            <FaLinkedin className="text-xl text-neutral-600 group-hover:text-black transition-colors duration-300" />
-          </a>
-          <a
-            href="https://github.com/iamDeepanshu9"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center justify-center w-12 h-12 rounded-full border-2 border-neutral-300 hover:border-black transition-all duration-300 hover:scale-110"
-          >
-            <FaGithub className="text-xl text-neutral-600 group-hover:text-black transition-colors duration-300" />
-          </a>
+          <div className="flex gap-4 mt-2 sm:mt-0">
+            <a
+              href="https://www.linkedin.com/in/iamdeepanshu9/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-center w-12 h-12 rounded-full border-2 border-neutral-300 hover:border-black transition-all duration-300 hover:scale-110"
+            >
+              <FaLinkedin className="text-xl text-neutral-600 group-hover:text-black transition-colors duration-300" />
+            </a>
+            <a
+              href="https://github.com/iamDeepanshu9"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-center w-12 h-12 rounded-full border-2 border-neutral-300 hover:border-black transition-all duration-300 hover:scale-110"
+            >
+              <FaGithub className="text-xl text-neutral-600 group-hover:text-black transition-colors duration-300" />
+            </a>
+          </div>
         </motion.div>
       </div>
     </section>

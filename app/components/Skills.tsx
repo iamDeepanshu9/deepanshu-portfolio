@@ -16,7 +16,7 @@ export default function Skills() {
     ];
 
     return (
-        <section className="py-20 bg-white overflow-hidden">
+        <section className="py-20 bg-neutral-50 overflow-hidden">
             <SectionTitle title="My Skills" subtitle="Expertise Areas" watermark="Skills" />
 
             <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between mt-10">

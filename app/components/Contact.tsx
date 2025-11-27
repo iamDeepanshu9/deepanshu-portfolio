@@ -126,11 +126,11 @@ export default function Contact() {
                                 transition={{ duration: 0.8, delay: 0.2 }}
                                 viewport={{ once: true }}
                                 onSubmit={handleSubmit}
-                                className="text-2xl md:text-4xl font-serif leading-relaxed"
+                                className="text-xl md:text-4xl font-serif leading-relaxed"
                             >
-                                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-4">
+                                <div className="flex flex-wrap items-baseline gap-x-2 md:gap-x-3 gap-y-4">
                                     <span>Hi Deepanshu, my name is</span>
-                                    <div className="relative inline-block">
+                                    <div className="relative inline-block max-w-full">
                                         <input
                                             type="text"
                                             value={form.name}
@@ -139,12 +139,12 @@ export default function Contact() {
                                                 handleInputResize(e);
                                             }}
                                             placeholder="your name"
-                                            className="bg-transparent border-b-2 border-neutral-700 focus:border-white outline-none text-white placeholder-neutral-600 min-w-[150px] transition-colors text-center"
+                                            className="bg-transparent border-b-2 border-neutral-700 focus:border-white outline-none text-white placeholder-neutral-600 min-w-[120px] max-w-full transition-colors text-center"
                                             style={{ width: "200px" }}
                                         />
                                     </div>
                                     <span>and I'd like to discuss</span>
-                                    <div className="relative inline-block">
+                                    <div className="relative inline-block max-w-full">
                                         <input
                                             type="text"
                                             value={form.project}
@@ -153,13 +153,12 @@ export default function Contact() {
                                                 handleInputResize(e);
                                             }}
                                             placeholder="your project/idea"
-                                            className="bg-transparent border-b-2 border-neutral-700 focus:border-white outline-none text-white placeholder-neutral-600 min-w-[200px] transition-colors text-center"
-                                            style={{ width: "500px" }}
+                                            className="bg-transparent border-b-2 border-neutral-700 focus:border-white outline-none text-white placeholder-neutral-600 min-w-[180px] max-w-full transition-colors text-center"
+                                            style={{ width: "300px" }}
                                         />
-                                        <span>.</span>
                                     </div>
                                     <span>You can email me at</span>
-                                    <div className="relative inline-block">
+                                    <div className="relative inline-block max-w-full">
                                         <input
                                             type="email"
                                             value={form.email}
@@ -167,12 +166,12 @@ export default function Contact() {
                                                 setForm({ ...form, email: e.target.value });
                                                 handleInputResize(e);
                                             }}
-                                            placeholder="your email"
-                                            className="bg-transparent border-b-2 border-neutral-700 focus:border-white outline-none text-white placeholder-neutral-600 min-w-[250px] transition-colors text-center"
-                                            style={{ width: "350px" }}
+                                            placeholder="  your email"
+                                            className="bg-transparent border-b-2 border-neutral-700 focus:border-white outline-none text-white placeholder-neutral-600 min-w-[180px] max-w-full transition-colors text-left"
+                                            style={{ width: "220px" }}
                                         />
                                     </div>
-                                    <span>.</span>
+
                                 </div>
 
                                 <div className="mt-16">

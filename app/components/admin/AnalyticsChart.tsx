@@ -67,7 +67,7 @@ export default function AnalyticsChart() {
     return (
         <div className="space-y-6">
             {/* Key Metrics Row */}
-            <div className="grid grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                     <p className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-1">Total Content</p>
                     <p className="text-4xl font-extrabold text-black">{stats.totalViews}</p>

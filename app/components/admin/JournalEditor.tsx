@@ -174,7 +174,7 @@ export default function JournalEditor() {
                 {/* Main Editor Area - Conditionally Rendered */}
                 {!isCalendarExpanded && (
                     <>
-                        <div className="flex-1 p-12 flex flex-col">
+                        <div className="flex-1 p-4 md:p-12 flex flex-col">
                             <div className="flex justify-between items-start mb-8">
                                 <div>
                                     <h4 className="text-gray-400 text-xs font-bold tracking-widest uppercase mb-2">
@@ -184,7 +184,7 @@ export default function JournalEditor() {
                                         type="text"
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
-                                        className="bg-transparent text-5xl font-bold text-white placeholder-gray-600 outline-none w-full"
+                                        className="bg-transparent text-3xl md:text-5xl font-bold text-white placeholder-gray-600 outline-none w-full"
                                         placeholder="Journal Title..."
                                     />
                                 </div>
@@ -284,7 +284,7 @@ export default function JournalEditor() {
 
                 {/* Expanded Calendar Inline View */}
                 {isCalendarExpanded && (
-                    <div className="flex-1 p-8 flex flex-col bg-[#0A1A12] overflow-hidden">
+                    <div className="flex-1 p-4 md:p-8 flex flex-col bg-[#0A1A12] overflow-hidden">
                         {/* Header */}
                         <div className="flex items-center justify-between mb-6 pb-6 border-b border-white/10">
                             <div className="flex items-center gap-6">
@@ -307,9 +307,9 @@ export default function JournalEditor() {
                                     <button
                                         onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
                                         className={`p-2 rounded-full transition-colors text-white ${currentMonth.getMonth() === new Date().getMonth() &&
-                                                currentMonth.getFullYear() === new Date().getFullYear()
-                                                ? "opacity-30 cursor-not-allowed"
-                                                : "hover:bg-white/5"
+                                            currentMonth.getFullYear() === new Date().getFullYear()
+                                            ? "opacity-30 cursor-not-allowed"
+                                            : "hover:bg-white/5"
                                             }`}
                                         disabled={
                                             currentMonth.getMonth() === new Date().getMonth() &&
@@ -386,8 +386,8 @@ export default function JournalEditor() {
                                             >
                                                 <div className="flex justify-between items-start">
                                                     <span className={`text-lg font-bold ${isSelected ? "text-green-400" :
-                                                            isToday ? "text-green-500" :
-                                                                "text-gray-400 group-hover:text-white"
+                                                        isToday ? "text-green-500" :
+                                                            "text-gray-400 group-hover:text-white"
                                                         }`}>
                                                         {i}
                                                     </span>

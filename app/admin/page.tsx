@@ -35,7 +35,8 @@ import {
     AlignLeft,
     Type,
     X,
-    Trash2
+    Trash2,
+    Menu
 } from "lucide-react";
 
 import JournalEditor from "../components/admin/JournalEditor";
@@ -50,6 +51,7 @@ export default function AdminPage() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [view, setView] = useState<ViewState>('dashboard');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     // Data from context
     const {
@@ -119,18 +121,29 @@ export default function AdminPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 flex">
+        <div className="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 flex relative">
             {/* Sidebar for non-dashboard views */}
             {view !== 'dashboard' && (
-                <AdminSidebar
-                    currentView={view}
-                    onNavigate={setView}
-                    onLogout={handleLogout}
-                />
+                <>
+                    <AdminSidebar
+                        currentView={view}
+                        onNavigate={setView}
+                        onLogout={handleLogout}
+                        isOpen={isSidebarOpen}
+                        onClose={() => setIsSidebarOpen(false)}
+                    />
+                    {/* Mobile Overlay */}
+                    {isSidebarOpen && (
+                        <div
+                            className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+                            onClick={() => setIsSidebarOpen(false)}
+                        />
+                    )}
+                </>
             )}
 
             {/* Main Content Area */}
-            <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${view !== 'dashboard' ? 'ml-64 bg-white' : ''}`}>
+            <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${view !== 'dashboard' ? 'md:ml-64 bg-white' : ''} w-full`}>
 
                 {/* Top Navigation - Only show on Dashboard */}
                 {view === 'dashboard' && (
@@ -163,8 +176,23 @@ export default function AdminPage() {
                     </nav>
                 )}
 
+                {/* Mobile Header for Non-Dashboard Views */}
+                {view !== 'dashboard' && (
+                    <div className="md:hidden p-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-30">
+                        <div className="flex items-center gap-3">
+                            <button onClick={() => setIsSidebarOpen(true)} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg">
+                                <Menu className="w-6 h-6 text-gray-700" />
+                            </button>
+                            <span className="font-bold text-lg capitalize">{view.replace('-', ' ')}</span>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">
+                            DK
+                        </div>
+                    </div>
+                )}
+
                 {/* Page Content */}
-                <main className={`flex-1 ${view === 'dashboard' ? 'p-8 pt-8 max-w-7xl mx-auto w-full' : ''}`}>
+                <main className={`flex-1 ${view === 'dashboard' ? 'p-4 md:p-8 pt-8 max-w-7xl mx-auto w-full' : ''}`}>
                     <AnimatePresence mode="wait">
                         {view === 'dashboard' ? (
                             <DashboardView
@@ -183,16 +211,16 @@ export default function AdminPage() {
                                 {/* Back button removed as we have Sidebar now */}
 
                                 {view === 'journal' ? (
-                                    <div className="p-6 h-full">
+                                    <div className="p-4 md:p-6 h-full">
                                         <JournalEditor />
                                     </div>
                                 ) : view === 'analytics' ? (
-                                    <div className="p-8 bg-[#F9FAFB] min-h-screen">
+                                    <div className="p-4 md:p-8 bg-[#F9FAFB] min-h-screen">
                                         <h2 className="text-3xl font-extrabold mb-8">Analytics & Reports</h2>
                                         <AnalyticsChart />
                                     </div>
                                 ) : (
-                                    <div className="p-8 h-full overflow-y-auto">
+                                    <div className="p-4 md:p-8 h-full overflow-y-auto">
                                         {view === 'editor' && (
                                             <>
                                                 <h2 className="text-3xl font-extrabold mb-8">Portfolio Editor</h2>
@@ -405,7 +433,7 @@ function PortfolioEditor({
 
     return (
         <div className="flex flex-col h-full">
-            <div className="border-b border-gray-100 px-8 pt-8 flex items-center gap-8 bg-gray-50/50">
+            <div className="border-b border-gray-100 px-4 md:px-8 pt-8 flex items-center gap-4 md:gap-8 bg-gray-50/50">
                 {(['skills', 'projects', 'testimonials'] as const).map((tab) => (
                     <button
                         key={tab}

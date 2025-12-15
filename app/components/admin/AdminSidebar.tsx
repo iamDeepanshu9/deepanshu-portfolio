@@ -9,7 +9,8 @@ import {
     MessageSquare,
     LogOut,
     Settings,
-    ChevronLeft
+    ChevronLeft,
+    X
 } from "lucide-react";
 
 type ViewState = 'dashboard' | 'editor' | 'blogs' | 'contacts' | 'journal' | 'analytics';
@@ -18,9 +19,11 @@ interface AdminSidebarProps {
     currentView: ViewState;
     onNavigate: (view: ViewState) => void;
     onLogout: () => void;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
-export default function AdminSidebar({ currentView, onNavigate, onLogout }: AdminSidebarProps) {
+export default function AdminSidebar({ currentView, onNavigate, onLogout, isOpen, onClose }: AdminSidebarProps) {
     const mainLinks = [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'analytics', label: 'Analytics', icon: BarChart2 },
@@ -31,13 +34,19 @@ export default function AdminSidebar({ currentView, onNavigate, onLogout }: Admi
     ];
 
     return (
-        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0A0A0A] text-gray-400 flex flex-col border-r border-white/10 z-50">
+        <aside className={`fixed left-0 top-0 h-screen w-64 bg-[#0A0A0A] text-gray-400 flex flex-col border-r border-white/10 z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
             {/* Logo Area */}
-            <div className="p-6 border-b border-white/10 flex items-center gap-3">
-                <div className="w-8 h-8 bg-[#FFF500] rounded-lg flex items-center justify-center">
-                    <span className="text-black font-bold text-lg">C</span>
+            <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-[#FFF500] rounded-lg flex items-center justify-center">
+                        <span className="text-black font-bold text-lg">C</span>
+                    </div>
+                    <span className="text-white font-bold tracking-tight">CreatorStudio</span>
                 </div>
-                <span className="text-white font-bold tracking-tight">CreatorStudio</span>
+                {/* Mobile Close Button */}
+                <button onClick={onClose} className="md:hidden text-gray-400 hover:text-white">
+                    <X className="w-6 h-6" />
+                </button>
             </div>
 
             {/* Navigation */}
@@ -49,10 +58,13 @@ export default function AdminSidebar({ currentView, onNavigate, onLogout }: Admi
                     return (
                         <button
                             key={link.id}
-                            onClick={() => onNavigate(link.id as ViewState)}
+                            onClick={() => {
+                                onNavigate(link.id as ViewState);
+                                onClose(); // Close sidebar on mobile when link clicked
+                            }}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive
-                                    ? "bg-[#FFF500] text-black font-bold"
-                                    : "hover:bg-white/10 text-gray-400 hover:text-white"
+                                ? "bg-[#FFF500] text-black font-bold"
+                                : "hover:bg-white/10 text-gray-400 hover:text-white"
                                 }`}
                         >
                             <Icon className={`w-5 h-5 ${isActive ? "text-black" : "group-hover:text-white"}`} />

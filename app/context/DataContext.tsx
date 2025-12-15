@@ -66,7 +66,7 @@ interface DataContextType {
     addBlog: (blog: Omit<Blog, "id" | "likes" | "comments">) => void;
     updateBlog: (id: string, blog: Partial<Blog>) => void;
     deleteBlog: (id: string) => void;
-    likeBlog: (id: string) => void;
+    toggleBlogLike: (id: string, action: 'like' | 'unlike') => Promise<void>;
     addComment: (blogId: string, comment: Omit<Comment, "id" | "date">) => void;
     toggleCommentVisibility: (commentId: string, blogId: string) => void;
     addTestimonial: (testimonial: Omit<Testimonial, "id">) => void;
@@ -345,19 +345,28 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    const likeBlog = async (id: string) => {
+    const toggleBlogLike = async (id: string, action: 'like' | 'unlike') => {
         // Optimistic update
         setBlogs((prev) =>
-            prev.map((blog) => (blog.id === id ? { ...blog, likes: blog.likes + 1 } : blog))
+            prev.map((blog) => {
+                if (blog.id === id) {
+                    return {
+                        ...blog,
+                        likes: action === 'like' ? blog.likes + 1 : Math.max(0, blog.likes - 1)
+                    };
+                }
+                return blog;
+            })
         );
 
-        // We need to fetch the current likes first or use an RPC, but for simplicity:
-        const blog = blogs.find((b) => b.id === id);
-        if (blog) {
-            await supabase
-                .from("blogs")
-                .update({ likes: blog.likes + 1 })
-                .eq("id", id);
+        const rpcName = action === 'like' ? 'increment_blog_likes' : 'decrement_blog_likes';
+
+        const { error } = await supabase.rpc(rpcName, { blog_id: id });
+
+        if (error) {
+            console.error(`Error ${action}ing blog:`, error);
+            // Revert optimistic update on error if needed
+            // For now, we'll just log the error
         }
     };
 
@@ -470,7 +479,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
                 addBlog,
                 updateBlog,
                 deleteBlog,
-                likeBlog,
+                toggleBlogLike,
                 addComment,
                 toggleCommentVisibility,
                 addTestimonial,

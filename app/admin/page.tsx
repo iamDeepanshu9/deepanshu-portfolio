@@ -16,7 +16,26 @@ import {
     ChevronLeft,
     LogOut,
     Users,
-    ArrowRight
+    ArrowRight,
+    ArrowLeft,
+    Save,
+    Eye,
+    Send,
+    Calendar,
+    Image,
+    Tag,
+    Globe,
+    Search,
+    MoreHorizontal,
+    Bold,
+    Italic,
+    Underline,
+    List,
+    Link,
+    AlignLeft,
+    Type,
+    X,
+    Trash2
 } from "lucide-react";
 
 // --- Types ---
@@ -103,7 +122,7 @@ export default function AdminPage() {
                     <div className="w-10 h-10 bg-[#FFF500] rounded-full flex items-center justify-center">
                         <PenTool className="w-5 h-5 text-black" />
                     </div>
-                    <span className="font-bold text-xl tracking-tight">CreatorStudio</span>
+                    <span className="font-bold text-xl tracking-tight">Deepanshu Portfolio ADMIN</span>
                 </div>
                 <div className="flex items-center gap-4">
                     <button className="p-2 hover:bg-gray-100 rounded-full transition-colors relative">
@@ -217,7 +236,7 @@ export default function AdminPage() {
                         <a href="#" className="hover:text-black">Privacy Policy</a>
                         <a href="#" className="hover:text-black">Terms of Service</a>
                     </div>
-                    <p>© 2023 CreatorStudio App</p>
+                    <p>© 2025 Deepanshu Kumar</p>
                 </div>
             </footer>
         </div>
@@ -235,7 +254,7 @@ function DashboardView({ stats, onNavigate }: { stats: any, onNavigate: (view: V
         >
             {/* Header Section */}
             <div>
-                <h1 className="text-5xl font-extrabold text-black mb-4 tracking-tight">Good morning, Creator</h1>
+                <h1 className="text-5xl font-extrabold text-black mb-4 tracking-tight">Good morning, Deepanshu</h1>
                 <p className="text-xl text-gray-500 font-medium">Everything is ready for your next masterpiece. What are we creating today?</p>
             </div>
 
@@ -858,6 +877,257 @@ function ProjectsManager({
     );
 }
 
+// --- Blog Editor Components ---
+
+function BlogEditor({
+    blog,
+    onSave,
+    onCancel,
+}: {
+    blog: Partial<Blog> | null;
+    onSave: (blog: any) => Promise<void>;
+    onCancel: () => void;
+}) {
+    const [form, setForm] = useState({
+        title: blog?.title || "",
+        excerpt: blog?.excerpt || "",
+        content: blog?.content || "",
+        readTime: blog?.readTime || "",
+        slug: blog?.slug || "",
+        visibility: blog?.isPublished !== undefined ? blog.isPublished : true,
+        schedule: blog?.scheduledDate ? "Scheduled" : "Immediately",
+        category: blog?.category || "Design",
+        tags: blog?.tags || ["minimalism", "ui/ux"],
+        featuredImage: blog?.featuredImage || null as string | null,
+    });
+
+    // Auto-generate slug from title if empty
+    useEffect(() => {
+        if (!blog && form.title && !form.slug) {
+            setForm(prev => ({
+                ...prev,
+                slug: prev.title
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/\s+/g, '-')
+            }));
+        }
+    }, [form.title, blog]);
+
+    const handleSave = async (status: 'draft' | 'published') => {
+        const payload = {
+            ...form,
+            date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+            isPublished: status === 'published',
+            // convert schedule string to date if needed, for now keeping logic simple
+        };
+        await onSave(payload);
+    };
+
+    return (
+        <div className="bg-white min-h-screen flex flex-col">
+            {/* Editor Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={onCancel}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                        <ArrowLeft className="w-5 h-5 text-gray-600" />
+                    </button>
+                    <div>
+                        <h2 className="text-sm font-bold text-gray-900">
+                            {blog ? "Edit Post" : "New Blog Post"}
+                        </h2>
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                            Draft - Unsaved changes
+                        </div>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3">
+                    <button className="text-sm font-bold text-gray-500 hover:text-black transition-colors px-3 py-2">
+                        Save Draft
+                    </button>
+                    <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg font-bold text-sm transition-colors">
+                        <Eye className="w-4 h-4" />
+                        Preview
+                    </button>
+                    <button
+                        onClick={() => handleSave('published')}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-sm transition-colors"
+                    >
+                        Publish
+                        <Send className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+
+            <div className="flex flex-1 overflow-hidden">
+                {/* Main Content Area */}
+                <div className="flex-1 overflow-y-auto p-8 md:p-12">
+                    <div className="max-w-3xl mx-auto">
+                        {/* Floating Toolbar (Visual Only) */}
+                        <div className="flex items-center gap-1 mb-8 p-2 bg-white border border-gray-200 shadow-sm rounded-lg w-fit mx-auto sticky top-4 z-10">
+                            <ToolbarButton icon={<Bold className="w-4 h-4" />} />
+                            <ToolbarButton icon={<Italic className="w-4 h-4" />} />
+                            <ToolbarButton icon={<Underline className="w-4 h-4" />} />
+                            <div className="w-px h-4 bg-gray-200 mx-1"></div>
+                            <ToolbarButton icon={<Type className="w-4 h-4" />} label="H1" />
+                            <ToolbarButton icon={<Type className="w-3 h-3" />} label="H2" />
+                            <div className="w-px h-4 bg-gray-200 mx-1"></div>
+                            <ToolbarButton icon={<List className="w-4 h-4" />} />
+                            <ToolbarButton icon={<Link className="w-4 h-4" />} />
+                            <ToolbarButton icon={<Image className="w-4 h-4" />} />
+                        </div>
+
+                        <input
+                            type="text"
+                            placeholder="Post Title"
+                            value={form.title}
+                            onChange={(e) => setForm({ ...form, title: e.target.value })}
+                            className="w-full text-4xl md:text-5xl font-bold text-gray-900 placeholder-gray-300 border-none outline-none bg-transparent mb-8"
+                        />
+
+                        <textarea
+                            placeholder="Tell your story..."
+                            value={form.content}
+                            onChange={(e) => setForm({ ...form, content: e.target.value })}
+                            className="w-full h-[calc(100vh-300px)] resize-none text-lg text-gray-700 leading-relaxed placeholder-gray-300 border-none outline-none bg-transparent"
+                        />
+                    </div>
+                </div>
+
+                {/* Sidebar Settings */}
+                <div className="w-80 border-l border-gray-200 bg-gray-50 h-full overflow-y-auto p-6 hidden lg:block">
+                    <h3 className="font-bold text-sm text-gray-900 mb-6 uppercase tracking-wider">Post Settings</h3>
+
+                    {/* Publishing */}
+                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Globe className="w-4 h-4 text-gray-500" />
+                                <span className="text-sm font-medium text-gray-700">Visibility</span>
+                            </div>
+                            <div className={`w-10 h-6 rounded-full p-1 cursor-pointer transition-colors ${form.visibility ? 'bg-blue-600' : 'bg-gray-300'}`} onClick={() => setForm({ ...form, visibility: !form.visibility })}>
+                                <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${form.visibility ? 'translate-x-4' : ''}`}></div>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Calendar className="w-4 h-4 text-gray-500" />
+                                <span className="text-sm font-medium text-gray-700">Schedule</span>
+                            </div>
+                            <span className="text-sm text-blue-600 font-medium cursor-pointer hover:underline">Immediately</span>
+                        </div>
+                    </div>
+
+                    {/* Featured Image */}
+                    <div className="mb-6">
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Featured Image</label>
+                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer bg-white group">
+                            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mb-3 group-hover:bg-white transition-colors">
+                                <Image className="w-5 h-5 text-gray-500 group-hover:text-blue-600" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-600 group-hover:text-blue-600">Drop image or click</span>
+                        </div>
+                    </div>
+
+                    {/* Category */}
+                    <div className="mb-6">
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Category</label>
+                        <select
+                            value={form.category}
+                            onChange={(e) => setForm({ ...form, category: e.target.value })}
+                            className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none"
+                        >
+                            <option>Design</option>
+                            <option>Development</option>
+                            <option>Tutorial</option>
+                            <option>Lifestyle</option>
+                        </select>
+                    </div>
+
+                    {/* Tags */}
+                    <div className="mb-6">
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Tags</label>
+                        <div className="bg-white border border-gray-200 rounded-lg p-2 flex flex-wrap gap-2 min-h-[42px]">
+                            {form.tags.map(tag => (
+                                <span key={tag} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded flex items-center gap-1">
+                                    {tag}
+                                    <button onClick={() => setForm({ ...form, tags: form.tags.filter(t => t !== tag) })}>
+                                        <X className="w-3 h-3 hover:text-blue-900" />
+                                    </button>
+                                </span>
+                            ))}
+                            <input
+                                type="text"
+                                placeholder="Add..."
+                                className="flex-1 min-w-[60px] text-sm outline-none bg-transparent"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        const val = e.currentTarget.value.trim();
+                                        if (val && !form.tags.includes(val)) {
+                                            setForm({ ...form, tags: [...form.tags, val] });
+                                            e.currentTarget.value = "";
+                                        }
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Slug */}
+                    <div className="mb-6">
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">URL Slug</label>
+                        <input
+                            type="text"
+                            value={form.slug}
+                            onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                            className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                        />
+                        <p className="text-[10px] text-gray-400 mt-1 truncate">domain.com/blog/{form.slug}</p>
+                    </div>
+
+                    {/* Excerpt */}
+                    <div className="mb-6">
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Excerpt</label>
+                        <textarea
+                            value={form.excerpt}
+                            onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
+                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg h-24 text-sm text-gray-700 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            placeholder="Brief summary..."
+                        />
+                    </div>
+
+                    {/* Read Time */}
+                    <div className="mb-6">
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Read Time</label>
+                        <input
+                            type="text"
+                            value={form.readTime}
+                            onChange={(e) => setForm({ ...form, readTime: e.target.value })}
+                            className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            placeholder="e.g 5 min read"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function ToolbarButton({ icon, label }: { icon: React.ReactNode, label?: string }) {
+    return (
+        <button className="p-1.5 text-gray-500 hover:text-black hover:bg-gray-100 rounded transition-colors flex items-center gap-1">
+            {icon}
+            {label && <span className="text-xs font-bold">{label}</span>}
+        </button>
+    );
+}
+
 function BlogsManager({
     blogs,
     addBlog,
@@ -866,234 +1136,128 @@ function BlogsManager({
     toggleCommentVisibility,
 }: {
     blogs: Blog[];
-    addBlog: (b: any) => void;
-    updateBlog: (id: string, b: any) => void;
-    deleteBlog: (id: string) => void;
+    addBlog: (b: any) => Promise<void>;
+    updateBlog: (id: string, b: any) => Promise<void>;
+    deleteBlog: (id: string) => Promise<void>;
     toggleCommentVisibility: (commentId: string, blogId: string) => void;
 }) {
-    const [form, setForm] = useState({
-        title: "",
-        excerpt: "",
-        content: "",
-        date: "",
-        readTime: "5 min read",
-        slug: "",
-    });
-    const [editingId, setEditingId] = useState<string | null>(null);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
-    const [showCommentsModal, setShowCommentsModal] = useState(false);
+    const [view, setView] = useState<'list' | 'editor'>('list');
+    const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
     const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
+    const [showCommentsModal, setShowCommentsModal] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id: string; name: string }>({
         isOpen: false,
         id: "",
         name: "",
     });
 
-    // Set default date on client side only to avoid hydration mismatch
-    useEffect(() => {
-        if (!form.date) {
-            setForm(prev => ({
-                ...prev,
-                date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-            }));
-        }
-    }, []);
-
-    // Helper function to get current date
-    const getCurrentDate = () => {
-        return new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-    };
-
-    // Helper function to generate URL-safe slug
-    const generateSlug = (title: string) => {
-        return title
-            .toLowerCase()
-            .trim()
-            .replace(/[^\w\s-]/g, '') // Remove special characters
-            .replace(/\s+/g, '-')      // Replace spaces with hyphens
-            .replace(/-+/g, '-')       // Replace multiple hyphens with single hyphen
-            .replace(/^-+|-+$/g, '');  // Remove leading/trailing hyphens
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError("");
-        setSuccess("");
-
-        if (!form.title.trim()) {
-            setError("Title is required");
-            return;
-        }
-
-        if (!form.excerpt.trim()) {
-            setError("Excerpt is required");
-            return;
-        }
-
-        if (!form.content.trim()) {
-            setError("Content is required");
-            return;
-        }
-
-        try {
-            const slug = editingId && form.slug ? form.slug : generateSlug(form.title);
-
-            console.log("Submitting blog:", { ...form, slug });
-
-            if (editingId) {
-                await updateBlog(editingId, { ...form, slug });
-                setSuccess("Blog updated successfully!");
-                setEditingId(null);
-            } else {
-                await addBlog({
-                    ...form,
-                    slug,
-                });
-                setSuccess("Blog added successfully!");
-            }
-
-            setForm({
-                title: "",
-                excerpt: "",
-                content: "",
-                date: getCurrentDate(),
-                readTime: "5 min read",
-                slug: "",
-            });
-        } catch (err) {
-            console.error("Error submitting blog:", err);
-            setError("Failed to save blog. Check console for details.");
-        }
+    const handleCreateNew = () => {
+        setEditingBlog(null);
+        setView('editor');
     };
 
     const handleEdit = (blog: Blog) => {
-        setForm({
-            title: blog.title,
-            excerpt: blog.excerpt,
-            content: blog.content,
-            date: blog.date,
-            readTime: blog.readTime,
-            slug: blog.slug,
-        });
-        setEditingId(blog.id);
-        setError("");
-        setSuccess("");
+        setEditingBlog(blog);
+        setView('editor');
     };
 
-    const handleCancel = () => {
-        setEditingId(null);
-        setForm({
-            title: "",
-            excerpt: "",
-            content: "",
-            date: getCurrentDate(),
-            readTime: "5 min read",
-            slug: "",
-        });
-        setError("");
-        setSuccess("");
+    const handleSave = async (blogData: any) => {
+        try {
+            if (editingBlog) {
+                await updateBlog(editingBlog.id, blogData);
+            } else {
+                await addBlog(blogData);
+            }
+            setView('list');
+            setEditingBlog(null);
+        } catch (error) {
+            console.error("Failed to save blog", error);
+            alert("Failed to save blog. See console.");
+        }
     };
+
+    if (view === 'editor') {
+        return (
+            <BlogEditor
+                blog={editingBlog}
+                onSave={handleSave}
+                onCancel={() => {
+                    setView('list');
+                    setEditingBlog(null);
+                }}
+            />
+        );
+    }
 
     return (
         <div>
-            <h3 className="text-xl font-bold mb-6 text-black">
-                {editingId ? "Edit Blog" : "Add New Blog"}
-            </h3>
-
-            {error && (
-                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-700 font-medium">{error}</p>
+            <div className="flex justify-between items-center mb-8">
+                <div>
+                    <h3 className="text-2xl font-bold text-black">All Posts</h3>
+                    <p className="text-gray-500">{blogs.length} published posts</p>
                 </div>
-            )}
+                <button
+                    onClick={handleCreateNew}
+                    className="px-6 py-3 bg-black text-white rounded-full font-bold hover:bg-gray-800 transition-colors shadow-lg hover:shadow-xl flex items-center gap-2"
+                >
+                    <PenTool className="w-4 h-4" />
+                    Write New Post
+                </button>
+            </div>
 
-            {success && (
-                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-green-700 font-medium">{success}</p>
-                </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 mb-8">
-                <input
-                    type="text"
-                    placeholder="Blog Title"
-                    value={form.title}
-                    onChange={(e) => setForm({ ...form, title: e.target.value })}
-                    className="px-4 py-2 border border-gray-400 rounded-lg text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
-                />
-                <textarea
-                    placeholder="Excerpt"
-                    value={form.excerpt}
-                    onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
-                    className="px-4 py-2 border border-gray-400 rounded-lg h-24 text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
-                />
-                <textarea
-                    placeholder="Full Content (HTML supported)"
-                    value={form.content}
-                    onChange={(e) => setForm({ ...form, content: e.target.value })}
-                    className="px-4 py-2 border border-gray-400 rounded-lg h-48 font-mono text-sm text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
-                />
-                <div className="flex gap-4">
-                    <input
-                        type="text"
-                        placeholder="Read Time (e.g. 5 min read)"
-                        value={form.readTime}
-                        onChange={(e) => setForm({ ...form, readTime: e.target.value })}
-                        className="flex-1 px-4 py-2 border border-gray-400 rounded-lg text-black placeholder-gray-500 focus:ring-2 focus:ring-black focus:border-transparent outline-none"
-                    />
-                    <button
-                        type="submit"
-                        className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 font-medium"
-                    >
-                        {editingId ? "Update Blog" : "Add Blog"}
-                    </button>
-                    {editingId && (
-                        <button
-                            type="button"
-                            onClick={handleCancel}
-                            className="px-6 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300 font-medium"
-                        >
-                            Cancel
-                        </button>
-                    )}
-                </div>
-            </form>
-
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {blogs.map((blog) => (
                     <div
                         key={blog.id}
-                        className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-white hover:shadow-sm transition-all"
+                        className="group relative bg-white border border-gray-200 hover:border-gray-300 rounded-2xl p-6 transition-all hover:shadow-lg flex flex-col h-[300px]"
                     >
-                        <div>
-                            <h4 className="font-bold text-gray-900">{blog.title}</h4>
-                            <p className="text-sm text-gray-600">{blog.date}</p>
-                            <p className="text-xs text-gray-500 mt-1">
-                                {blog.comments?.length || 0} comment{blog.comments?.length !== 1 ? 's' : ''}
+                        <div className="flex-1 overflow-hidden">
+                            <div className="flex justify-between items-start mb-3">
+                                <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-full uppercase tracking-wider">
+                                    {blog.readTime || 'Article'}
+                                </span>
+                                <span className="text-gray-400 text-xs font-medium">
+                                    {blog.date}
+                                </span>
+                            </div>
+
+                            <h4 className="font-bold text-xl text-gray-900 mb-2 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+                                {blog.title}
+                            </h4>
+
+                            <p className="text-gray-500 text-sm line-clamp-3 mb-4">
+                                {blog.excerpt}
                             </p>
                         </div>
-                        <div className="flex gap-2">
+
+                        <div className="pt-4 border-t border-gray-100 mt-auto flex items-center justify-between">
                             <button
                                 onClick={() => {
                                     setSelectedBlog(blog);
                                     setShowCommentsModal(true);
                                 }}
-                                className="text-purple-700 hover:text-purple-900 text-sm font-medium"
+                                className="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-black transition-colors"
                             >
-                                Comments
+                                <Users className="w-3.5 h-3.5" />
+                                {blog.comments?.length || 0} Comments
                             </button>
-                            <button
-                                onClick={() => handleEdit(blog)}
-                                className="text-blue-700 hover:text-blue-900 text-sm font-medium"
-                            >
-                                Edit
-                            </button>
-                            <button
-                                onClick={() => setDeleteConfirm({ isOpen: true, id: blog.id, name: blog.title })}
-                                className="text-red-600 hover:text-red-800 text-sm font-medium"
-                            >
-                                Delete
-                            </button>
+
+                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                    onClick={() => handleEdit(blog)}
+                                    className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                    title="Edit"
+                                >
+                                    <PenTool className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => setDeleteConfirm({ isOpen: true, id: blog.id, name: blog.title })}
+                                    className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                    title="Delete"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -1101,94 +1265,75 @@ function BlogsManager({
 
             {/* Comments Management Modal */}
             {showCommentsModal && selectedBlog && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+                        <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50">
                             <div>
                                 <h3 className="text-xl font-bold text-black">Manage Comments</h3>
-                                <p className="text-sm text-gray-600 mt-1">{selectedBlog.title}</p>
+                                <p className="text-sm text-gray-600 mt-1 max-w-md truncate">{selectedBlog.title}</p>
                             </div>
                             <button
                                 onClick={() => {
                                     setShowCommentsModal(false);
                                     setSelectedBlog(null);
                                 }}
-                                className="text-gray-500 hover:text-black transition-colors"
+                                className="p-2 bg-white rounded-full hover:bg-gray-200 transition-colors border border-gray-200"
                             >
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <X className="w-5 h-5 text-gray-500" />
                             </button>
                         </div>
 
-                        <div className="p-6 overflow-y-auto max-h-[calc(80vh-140px)]">
+                        <div className="p-6 overflow-y-auto flex-1">
                             {selectedBlog.comments && selectedBlog.comments.length > 0 ? (
                                 <div className="space-y-4">
                                     {selectedBlog.comments.map((comment) => (
                                         <div
                                             key={comment.id}
-                                            className={`p-4 border rounded-lg transition-colors ${comment.hidden
-                                                ? 'border-gray-300 bg-gray-100 opacity-60'
-                                                : 'border-gray-200 bg-gray-50 hover:bg-white'
+                                            className={`p-4 border rounded-xl transition-colors ${comment.hidden
+                                                ? 'border-gray-200 bg-gray-50 opacity-60'
+                                                : 'border-gray-200 bg-white shadow-sm'
                                                 }`}
                                         >
                                             <div className="flex justify-between items-start mb-2">
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2">
-                                                        <p className="font-bold text-gray-900">{comment.user}</p>
+                                                        <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold">
+                                                            {comment.user.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <p className="font-bold text-gray-900 text-sm">{comment.user}</p>
                                                         {comment.hidden && (
-                                                            <span className="text-xs px-2 py-0.5 bg-gray-300 text-gray-700 rounded-full">
+                                                            <span className="text-[10px] px-2 py-0.5 bg-gray-200 text-gray-600 rounded-full font-bold uppercase tracking-wider">
                                                                 Hidden
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-xs text-gray-500">{comment.date}</p>
+                                                    <p className="text-xs text-gray-400 mt-0.5">{comment.date}</p>
                                                 </div>
                                                 <button
                                                     onClick={() => {
                                                         toggleCommentVisibility(comment.id, selectedBlog.id);
                                                     }}
                                                     className={`p-2 rounded-lg transition-colors ${comment.hidden
-                                                        ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-                                                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                                                        ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-200'
+                                                        : 'text-blue-600 hover:bg-blue-50'
                                                         }`}
                                                     title={comment.hidden ? 'Show comment' : 'Hide comment'}
                                                 >
-                                                    {comment.hidden ? (
-                                                        // Eye slash icon (hidden)
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                                                        </svg>
-                                                    ) : (
-                                                        // Eye icon (visible)
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                        </svg>
-                                                    )}
+                                                    {comment.hidden ? <Eye className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                                 </button>
                                             </div>
-                                            <p className="text-gray-700">{comment.text}</p>
+                                            <p className="text-gray-700 text-sm leading-relaxed">{comment.text}</p>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-12">
-                                    <p className="text-gray-500 italic">No comments yet</p>
+                                <div className="text-center py-12 flex flex-col items-center gap-4">
+                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
+                                        <Users className="w-8 h-8 text-gray-300" />
+                                    </div>
+                                    <p className="text-gray-500 font-medium">No comments yet</p>
                                 </div>
                             )}
-                        </div>
-
-                        <div className="p-6 border-t border-gray-200 flex justify-end">
-                            <button
-                                onClick={() => {
-                                    setShowCommentsModal(false);
-                                    setSelectedBlog(null);
-                                }}
-                                className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 font-medium"
-                            >
-                                Close
-                            </button>
                         </div>
                     </div>
                 </div>

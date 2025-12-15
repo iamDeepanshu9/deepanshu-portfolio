@@ -42,6 +42,12 @@ export type Blog = {
     image?: string;
     likes: number;
     comments: Comment[];
+    // New fields
+    category?: string;
+    tags?: string[];
+    featuredImage?: string;
+    isPublished?: boolean;
+    scheduledDate?: string;
 };
 
 export type Testimonial = {
@@ -63,9 +69,9 @@ interface DataContextType {
     addProject: (project: Omit<Project, "id">) => void;
     updateProject: (id: number, project: Partial<Project>) => void;
     deleteProject: (id: number) => void;
-    addBlog: (blog: Omit<Blog, "id" | "likes" | "comments">) => void;
-    updateBlog: (id: string, blog: Partial<Blog>) => void;
-    deleteBlog: (id: string) => void;
+    addBlog: (blog: Omit<Blog, "id" | "likes" | "comments">) => Promise<void>;
+    updateBlog: (id: string, blog: Partial<Blog>) => Promise<void>;
+    deleteBlog: (id: string) => Promise<void>;
     toggleBlogLike: (id: string, action: 'like' | 'unlike') => Promise<void>;
     addComment: (blogId: string, comment: Omit<Comment, "id" | "date">) => void;
     toggleCommentVisibility: (commentId: string, blogId: string) => void;
@@ -109,6 +115,12 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
                         ...b,
                         readTime: b.read_time,
                         comments: b.comments ? b.comments.map((c: any) => ({ ...c, blogId: c.blog_id })) : [],
+                        // Map new fields
+                        category: b.category,
+                        tags: b.tags,
+                        featuredImage: b.featured_image,
+                        isPublished: b.is_published,
+                        scheduledDate: b.scheduled_date,
                     }))
                 );
             }
@@ -277,10 +289,13 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         console.log("Adding blog with data:", blog);
 
         // Transform readTime to read_time for database
-        const { readTime, ...blogData } = blog;
+        const { readTime, featuredImage, isPublished, scheduledDate, ...blogData } = blog;
         const insertData = {
             ...blogData,
-            read_time: readTime
+            read_time: readTime,
+            featured_image: featuredImage,
+            is_published: isPublished,
+            scheduled_date: scheduledDate,
         };
 
         console.log("Inserting to database:", insertData);
@@ -316,6 +331,18 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         if (updatedBlog.readTime) {
             updatePayload.read_time = updatedBlog.readTime;
             delete updatePayload.readTime;
+        }
+        if (updatedBlog.featuredImage) {
+            updatePayload.featured_image = updatedBlog.featuredImage;
+            delete updatePayload.featuredImage;
+        }
+        if (updatedBlog.isPublished !== undefined) {
+            updatePayload.is_published = updatedBlog.isPublished;
+            delete updatePayload.isPublished;
+        }
+        if (updatedBlog.scheduledDate) {
+            updatePayload.scheduled_date = updatedBlog.scheduledDate;
+            delete updatePayload.scheduledDate;
         }
 
         const { error } = await supabase.from("blogs").update(updatePayload).eq("id", id);

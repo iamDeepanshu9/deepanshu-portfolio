@@ -5,14 +5,24 @@ import { useData } from "../../context/DataContext";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 export default function BlogDetail() {
     const { slug } = useParams();
-    const { blogs, likeBlog, addComment, isLoading } = useData();
+    const { blogs, toggleBlogLike, addComment, isLoading } = useData();
     const blog = blogs.find((b) => b.slug === slug);
 
     const [commentText, setCommentText] = useState("");
     const [userName, setUserName] = useState("");
+    const [isLiked, setIsLiked] = useState(false);
+
+    // Initialize like state from local storage
+    useEffect(() => {
+        if (blog) {
+            const liked = localStorage.getItem(`blog_liked_${blog.id}`) === 'true';
+            setIsLiked(liked);
+        }
+    }, [blog]);
 
     // Show loading state while data is being fetched
     if (isLoading) {
@@ -45,8 +55,12 @@ export default function BlogDetail() {
         );
     }
 
-    const handleLike = () => {
-        likeBlog(blog.id);
+    const handleLike = async () => {
+        const newIsLiked = !isLiked;
+        setIsLiked(newIsLiked);
+        localStorage.setItem(`blog_liked_${blog.id}`, String(newIsLiked));
+
+        await toggleBlogLike(blog.id, newIsLiked ? 'like' : 'unlike');
     };
 
     const handleShare = () => {
@@ -109,10 +123,11 @@ export default function BlogDetail() {
                         <div className="flex items-center gap-6">
                             <button
                                 onClick={handleLike}
-                                className="flex items-center gap-2 text-neutral-600 hover:text-red-500 transition-colors group"
+                                className={`flex items-center gap-2 transition-colors group ${isLiked ? 'text-red-500' : 'text-neutral-600 hover:text-red-500'
+                                    }`}
                             >
                                 <svg
-                                    className="w-6 h-6 group-hover:fill-current"
+                                    className={`w-6 h-6 ${isLiked ? 'fill-current' : 'group-hover:fill-current'}`}
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"

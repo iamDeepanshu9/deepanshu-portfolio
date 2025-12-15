@@ -38,8 +38,12 @@ import {
     Trash2
 } from "lucide-react";
 
+import JournalEditor from "../components/admin/JournalEditor";
+import AnalyticsChart from "../components/admin/AnalyticsChart";
+import AdminSidebar from "../components/admin/AdminSidebar";
+
 // --- Types ---
-type ViewState = 'dashboard' | 'editor' | 'blogs' | 'contacts';
+type ViewState = 'dashboard' | 'editor' | 'blogs' | 'contacts' | 'journal' | 'analytics';
 
 export default function AdminPage() {
     const router = useRouter();
@@ -115,130 +119,142 @@ export default function AdminPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F9FAFB] font-sans text-gray-900">
-            {/* Top Navigation */}
-            <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-100 px-6 py-4 z-50 flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#FFF500] rounded-full flex items-center justify-center">
-                        <PenTool className="w-5 h-5 text-black" />
-                    </div>
-                    <span className="font-bold text-xl tracking-tight">Deepanshu Portfolio ADMIN</span>
-                </div>
-                <div className="flex items-center gap-4">
-                    <button className="p-2 hover:bg-gray-100 rounded-full transition-colors relative">
-                        <Bell className="w-5 h-5 text-gray-600" />
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-                    </button>
-                    <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <Settings className="w-5 h-5 text-gray-600" />
-                    </button>
-                    <button
-                        onClick={handleLogout}
-                        className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden hover:ring-2 hover:ring-offset-2 hover:ring-black transition-all"
-                    >
-                        <img
-                            src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
-                            alt="Admin"
-                            className="w-full h-full object-cover"
-                        />
-                    </button>
-                </div>
-            </nav>
+        <div className="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 flex">
+            {/* Sidebar for non-dashboard views */}
+            {view !== 'dashboard' && (
+                <AdminSidebar
+                    currentView={view}
+                    onNavigate={setView}
+                    onLogout={handleLogout}
+                />
+            )}
 
-            {/* Main Content */}
-            <main className="pt-24 pb-12 px-6 max-w-7xl mx-auto">
-                <AnimatePresence mode="wait">
-                    {view === 'dashboard' ? (
-                        <DashboardView
-                            key="dashboard"
-                            stats={stats}
-                            onNavigate={setView}
-                        />
-                    ) : (
-                        <motion.div
-                            key="editor"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                        >
-                            <button
-                                onClick={() => setView('dashboard')}
-                                className="mb-6 flex items-center gap-2 text-gray-500 hover:text-black transition-colors font-medium group"
-                            >
-                                <div className="p-1 rounded-full group-hover:bg-gray-200 transition-colors">
-                                    <ChevronLeft className="w-5 h-5" />
-                                </div>
-                                Back to Dashboard
-                            </button>
+            {/* Main Content Area */}
+            <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${view !== 'dashboard' ? 'ml-64 bg-white' : ''}`}>
 
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-[600px]">
-                                {view === 'editor' && (
-                                    <PortfolioEditor
-                                        skills={skills}
-                                        projects={projects}
-                                        testimonials={testimonials}
-                                        addSkill={addSkill}
-                                        updateSkill={updateSkill}
-                                        deleteSkill={deleteSkill}
-                                        addProject={addProject}
-                                        updateProject={updateProject}
-                                        deleteProject={deleteProject}
-                                        addTestimonial={addTestimonial}
-                                        updateTestimonial={updateTestimonial}
-                                        deleteTestimonial={deleteTestimonial}
-                                    />
-                                )}
-                                {view === 'blogs' && (
-                                    <div className="p-8">
-                                        <div className="flex items-center gap-3 mb-8">
-                                            <div className="p-3 bg-yellow-100 rounded-xl text-yellow-700">
-                                                <PenTool className="w-6 h-6" />
-                                            </div>
-                                            <div>
-                                                <h2 className="text-2xl font-bold">Blog Writer</h2>
-                                                <p className="text-gray-500">Create and manage your content</p>
-                                            </div>
-                                        </div>
-                                        <BlogsManager
-                                            blogs={blogs}
-                                            addBlog={addBlog}
-                                            updateBlog={updateBlog}
-                                            deleteBlog={deleteBlog}
-                                            toggleCommentVisibility={toggleCommentVisibility}
-                                        />
-                                    </div>
-                                )}
-                                {view === 'contacts' && (
-                                    <div className="p-8">
-                                        <div className="flex items-center gap-3 mb-8">
-                                            <div className="p-3 bg-blue-100 rounded-xl text-blue-700">
-                                                <Users className="w-6 h-6" />
-                                            </div>
-                                            <div>
-                                                <h2 className="text-2xl font-bold">Inbox & Contacts</h2>
-                                                <p className="text-gray-500">Manage inquiries and messages</p>
-                                            </div>
-                                        </div>
-                                        <ContactsManager />
-                                    </div>
-                                )}
+                {/* Top Navigation - Only show on Dashboard */}
+                {view === 'dashboard' && (
+                    <nav className="sticky top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-100 px-8 py-4 z-40 flex justify-between items-center transition-all">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-[#FFF500] rounded-xl flex items-center justify-center shadow-sm">
+                                <span className="font-bold text-lg">C</span>
                             </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </main>
+                            <span className="font-bold text-xl tracking-tight text-black">CreatorStudio</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <button className="p-2.5 hover:bg-gray-100 rounded-full transition-colors relative">
+                                <Bell className="w-5 h-5 text-gray-600" />
+                                <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                            </button>
+                            <button className="p-2.5 hover:bg-gray-100 rounded-full transition-colors">
+                                <Settings className="w-5 h-5 text-gray-600" />
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden hover:ring-2 hover:ring-offset-2 hover:ring-black transition-all"
+                            >
+                                <img
+                                    src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                                    alt="Admin"
+                                    className="w-full h-full object-cover"
+                                />
+                            </button>
+                        </div>
+                    </nav>
+                )}
 
-            {/* Footer */}
-            <footer className="border-t border-gray-200 py-8 text-center text-sm text-gray-500">
-                <div className="flex justify-between max-w-7xl mx-auto px-6">
-                    <div className="flex gap-6">
-                        <a href="#" className="hover:text-black">Support</a>
-                        <a href="#" className="hover:text-black">Privacy Policy</a>
-                        <a href="#" className="hover:text-black">Terms of Service</a>
-                    </div>
-                    <p>© 2025 Deepanshu Kumar</p>
-                </div>
-            </footer>
+                {/* Page Content */}
+                <main className={`flex-1 ${view === 'dashboard' ? 'p-8 pt-8 max-w-7xl mx-auto w-full' : ''}`}>
+                    <AnimatePresence mode="wait">
+                        {view === 'dashboard' ? (
+                            <DashboardView
+                                key="dashboard"
+                                stats={stats}
+                                onNavigate={setView}
+                            />
+                        ) : (
+                            <motion.div
+                                key={view}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="h-full"
+                            >
+                                {/* Back button removed as we have Sidebar now */}
+
+                                {view === 'journal' ? (
+                                    <div className="p-6 h-full">
+                                        <JournalEditor />
+                                    </div>
+                                ) : view === 'analytics' ? (
+                                    <div className="p-8 bg-[#F9FAFB] min-h-screen">
+                                        <h2 className="text-3xl font-extrabold mb-8">Analytics & Reports</h2>
+                                        <AnalyticsChart />
+                                    </div>
+                                ) : (
+                                    <div className="p-8 h-full overflow-y-auto">
+                                        {view === 'editor' && (
+                                            <>
+                                                <h2 className="text-3xl font-extrabold mb-8">Portfolio Editor</h2>
+                                                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-[600px]">
+                                                    <PortfolioEditor
+                                                        skills={skills}
+                                                        projects={projects}
+                                                        testimonials={testimonials}
+                                                        addSkill={addSkill}
+                                                        updateSkill={updateSkill}
+                                                        deleteSkill={deleteSkill}
+                                                        addProject={addProject}
+                                                        updateProject={updateProject}
+                                                        deleteProject={deleteProject}
+                                                        addTestimonial={addTestimonial}
+                                                        updateTestimonial={updateTestimonial}
+                                                        deleteTestimonial={deleteTestimonial}
+                                                    />
+                                                </div>
+                                            </>
+                                        )}
+                                        {view === 'blogs' && (
+                                            <>
+                                                <div className="flex items-center gap-3 mb-8">
+                                                    <div className="p-3 bg-yellow-100 rounded-xl text-yellow-700">
+                                                        <PenTool className="w-6 h-6" />
+                                                    </div>
+                                                    <div>
+                                                        <h2 className="text-2xl font-bold">Blog Writer</h2>
+                                                        <p className="text-gray-500">Create and manage your content</p>
+                                                    </div>
+                                                </div>
+                                                <BlogsManager
+                                                    blogs={blogs}
+                                                    addBlog={addBlog}
+                                                    updateBlog={updateBlog}
+                                                    deleteBlog={deleteBlog}
+                                                    toggleCommentVisibility={toggleCommentVisibility}
+                                                />
+                                            </>
+                                        )}
+                                        {view === 'contacts' && (
+                                            <>
+                                                <div className="flex items-center gap-3 mb-8">
+                                                    <div className="p-3 bg-blue-100 rounded-xl text-blue-700">
+                                                        <Users className="w-6 h-6" />
+                                                    </div>
+                                                    <div>
+                                                        <h2 className="text-2xl font-bold">Inbox & Contacts</h2>
+                                                        <p className="text-gray-500">Manage inquiries and messages</p>
+                                                    </div>
+                                                </div>
+                                                <ContactsManager />
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </main>
+            </div>
         </div>
     );
 }
@@ -254,7 +270,7 @@ function DashboardView({ stats, onNavigate }: { stats: any, onNavigate: (view: V
         >
             {/* Header Section */}
             <div>
-                <h1 className="text-5xl font-extrabold text-black mb-4 tracking-tight">Good morning, Deepanshu</h1>
+                <h1 className="text-5xl font-extrabold text-black mb-4 tracking-tight">Good morning, Creator</h1>
                 <p className="text-xl text-gray-500 font-medium">Everything is ready for your next masterpiece. What are we creating today?</p>
             </div>
 
@@ -262,17 +278,17 @@ function DashboardView({ stats, onNavigate }: { stats: any, onNavigate: (view: V
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <StatsCard
                     label="Drafts Pending"
-                    value={stats.drafts}
+                    value="3"
                     icon={<FileText className="w-5 h-5 text-gray-700" />}
                 />
                 <StatsCard
                     label="Published Posts"
-                    value={stats.published}
+                    value="12"
                     icon={<div className="w-5 h-5 bg-black rounded-full flex items-center justify-center"><span className="text-white text-xs">✓</span></div>}
                 />
                 <StatsCard
                     label="Total Views"
-                    value={stats.views}
+                    value="1.2k"
                     icon={<div className="w-5 h-5 flex items-end justify-center gap-[2px]"><div className="w-1 h-2 bg-black"></div><div className="w-1 h-3 bg-black"></div><div className="w-1 h-4 bg-black"></div></div>}
                 />
             </div>
@@ -282,54 +298,58 @@ function DashboardView({ stats, onNavigate }: { stats: any, onNavigate: (view: V
                 <ActionCard
                     title="Dashboard"
                     subtitle="View Analytics & Reports"
-                    color="bg-teal-700"
+                    color="bg-[#EAB308]"
+                    textColor="text-black"
                     icon={<LayoutDashboard className="w-6 h-6" />}
-                    onClick={() => onNavigate('contacts')} // Mapping to Contacts for now as per plan
+                    onClick={() => onNavigate('analytics')}
                     image="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400"
                 />
                 <ActionCard
                     title="Portfolio Editor"
                     subtitle="Manage Your Showcase"
-                    color="bg-neutral-800"
-                    icon={<PenTool className="w-6 h-6" />}
+                    color="bg-[#EAB308]"
+                    textColor="text-black"
+                    icon={<Image className="w-6 h-6" />}
                     onClick={() => onNavigate('editor')}
                     image="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=400"
                 />
                 <ActionCard
                     title="Blog Writer"
                     subtitle="Write a New Post"
-                    color="bg-stone-800"
-                    icon={<FileText className="w-6 h-6" />}
+                    color="bg-[#EAB308]"
+                    textColor="text-black"
+                    icon={<PenTool className="w-6 h-6" />}
                     onClick={() => onNavigate('blogs')}
                     image="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=400"
                 />
                 <ActionCard
                     title="Daily Journal"
                     subtitle="Log Your Thoughts"
-                    color="bg-amber-700"
+                    color="bg-[#EAB308]"
+                    textColor="text-black"
                     icon={<Book className="w-6 h-6" />}
-                    onClick={() => { }} // Placeholder
+                    onClick={() => onNavigate('journal')}
                     image="https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=400"
                 />
             </div>
 
             {/* Bottom Banner */}
-            <div className="bg-[#FAF9E8] rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between border border-yellow-100">
-                <div className="flex items-center gap-6 mb-6 md:mb-0">
-                    <div className="w-16 h-16 bg-[#FFF500] rounded-full flex items-center justify-center transform rotate-12 shadow-sm">
-                        <span className="text-2xl">🚀</span>
+            <div className="bg-[#FAF9E8] rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between border border-yellow-100 shadow-sm">
+                <div className="flex items-center gap-8 mb-6 md:mb-0">
+                    <div className="w-20 h-20 bg-[#FFF500] rounded-full flex items-center justify-center transform hover:rotate-12 transition-transform shadow-sm">
+                        <span className="text-3xl">🚀</span>
                     </div>
                     <div>
-                        <h3 className="text-2xl font-bold text-black mb-1">Ready to publish?</h3>
-                        <p className="text-gray-600">You have {stats.drafts} drafts that are almost ready to go live.</p>
+                        <h3 className="text-3xl font-bold text-black mb-2">Ready to publish?</h3>
+                        <p className="text-gray-600 text-lg">You have 3 drafts that are almost ready to go live.</p>
                     </div>
                 </div>
                 <button
                     onClick={() => onNavigate('blogs')}
-                    className="px-8 py-3 bg-[#FFF500] hover:bg-yellow-300 text-black font-bold rounded-full transition-colors flex items-center gap-2 group"
+                    className="px-10 py-4 bg-[#FFF500] hover:bg-yellow-300 text-black font-bold rounded-full transition-all flex items-center gap-2 group shadow-md hover:shadow-lg"
                 >
                     Review Drafts
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
             </div>
         </motion.div>
@@ -340,23 +360,23 @@ function DashboardView({ stats, onNavigate }: { stats: any, onNavigate: (view: V
 
 function StatsCard({ label, value, icon }: { label: string, value: string | number, icon: React.ReactNode }) {
     return (
-        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
+        <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-100 hover:shadow-md transition-all hover:-translate-y-1">
+            <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center">
                     {icon}
                 </div>
                 <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">{label}</span>
             </div>
-            <p className="text-5xl font-extrabold text-black">{value}</p>
+            <p className="text-6xl font-extrabold text-black tracking-tighter">{value}</p>
         </div>
     );
 }
 
-function ActionCard({ title, subtitle, color, icon, onClick, image }: any) {
+function ActionCard({ title, subtitle, color, textColor = "text-white", icon, onClick, image }: any) {
     return (
         <button
             onClick={onClick}
-            className="group relative h-80 w-full rounded-[2rem] overflow-hidden text-left bg-gray-100 hover:shadow-xl transition-all duration-300"
+            className="group relative h-80 w-full rounded-[2.5rem] overflow-hidden text-left bg-gray-100 hover:shadow-xl transition-all duration-300"
         >
             <div className="absolute inset-0 bg-gray-200">
                 <img src={image} alt={title} className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" />
@@ -364,7 +384,7 @@ function ActionCard({ title, subtitle, color, icon, onClick, image }: any) {
             </div>
 
             <div className="absolute bottom-0 left-0 p-8 w-full">
-                <div className={`w-12 h-12 ${color} rounded-full flex items-center justify-center mb-4 text-white shadow-lg group-hover:scale-110 transition-transform`}>
+                <div className={`w-12 h-12 ${color} ${textColor} rounded-full flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
                     {icon}
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-1 group-hover:translate-x-1 transition-transform">{title}</h3>

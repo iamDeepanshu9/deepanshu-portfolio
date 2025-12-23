@@ -39,9 +39,9 @@ export default function AdminSidebar({ currentView, onNavigate, onLogout, isOpen
             <div className="p-6 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-[#FFF500] rounded-lg flex items-center justify-center">
-                        <span className="text-black font-bold text-lg">C</span>
+                        <span className="text-black font-bold text-lg">DK</span>
                     </div>
-                    <span className="text-white font-bold tracking-tight">CreatorStudio</span>
+                    <span className="text-white font-bold tracking-tight">Deepanshu Kumar</span>
                 </div>
                 {/* Mobile Close Button */}
                 <button onClick={onClose} className="md:hidden text-gray-400 hover:text-white">

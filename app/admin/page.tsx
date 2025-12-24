@@ -150,9 +150,9 @@ export default function AdminPage() {
                     <nav className="sticky top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-100 px-8 py-4 z-40 flex justify-between items-center transition-all">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-[#FFF500] rounded-xl flex items-center justify-center shadow-sm">
-                                <span className="font-bold text-lg">C</span>
+                                <span className="font-bold text-lg">DK</span>
                             </div>
-                            <span className="font-bold text-xl tracking-tight text-black">CreatorStudio</span>
+                            <span className="font-bold text-xl tracking-tight text-black">Deepanshu Kumar</span>
                         </div>
                         <div className="flex items-center gap-4">
                             <button className="p-2.5 hover:bg-gray-100 rounded-full transition-colors relative">
@@ -298,7 +298,7 @@ function DashboardView({ stats, onNavigate }: { stats: any, onNavigate: (view: V
         >
             {/* Header Section */}
             <div>
-                <h1 className="text-5xl font-extrabold text-black mb-4 tracking-tight">Good morning, Creator</h1>
+                <h1 className="text-5xl font-extrabold text-black mb-4 tracking-tight">Good morning, DK</h1>
                 <p className="text-xl text-gray-500 font-medium">Everything is ready for your next masterpiece. What are we creating today?</p>
             </div>
 

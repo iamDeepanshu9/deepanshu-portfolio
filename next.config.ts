@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         {
-          source: '/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)',
+          source: '/:path((?!api|_next|_static|_vercel|[\\w-]+\\.\\w+).*)',
           has: [
             {
               type: 'host',
@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
           destination: '/admin/:path*',
         },
         {
-          source: '/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)',
+          source: '/:path((?!api|_next|_static|_vercel|[\\w-]+\\.\\w+).*)',
           has: [
             {
               type: 'host',

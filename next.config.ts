@@ -3,28 +3,30 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   async rewrites() {
-    return [
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'admin.deepanshukumar.com',
-          },
-        ],
-        destination: '/admin/:path*',
-      },
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'admin.localhost(:\\d+)?',
-          },
-        ],
-        destination: '/admin/:path*',
-      },
-    ];
+    return {
+      beforeFiles: [
+        {
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: 'admin.deepanshukumar.com',
+            },
+          ],
+          destination: '/admin/:path*',
+        },
+        {
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: 'admin.localhost(:\\d+)?',
+            },
+          ],
+          destination: '/admin/:path*',
+        },
+      ]
+    };
   },
   async redirects() {
     return [

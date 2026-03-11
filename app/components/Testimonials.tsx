@@ -1,83 +1,59 @@
-"use client";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaQuoteLeft } from "react-icons/fa";
-import { useData } from "../context/DataContext";
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
 
 export default function Testimonials() {
-    const { testimonials } = useData();
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isPaused, setIsPaused] = useState(false);
-
-    useEffect(() => {
-        if (testimonials.length <= 1 || isPaused) return;
-
-        const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-        }, 3000);
-
-        return () => clearInterval(interval);
-    }, [testimonials.length, isPaused]);
-
-    if (testimonials.length === 0) return null;
-
     return (
-        <section className="py-32 bg-white flex items-center justify-center relative overflow-hidden">
-            {/* Decorative background element */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-5 pointer-events-none">
-                <span className="absolute -top-20 -left-20 text-[20rem] font-serif text-black">“</span>
-            </div>
-
-            <div
-                className="container mx-auto px-4 text-center relative z-10"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-            >
-                <div className="max-w-4xl mx-auto h-[450px] flex flex-col justify-center">
-                    <FaQuoteLeft className="text-4xl md:text-5xl text-neutral-300 mx-auto mb-8" />
-
-                    <div className="relative h-[280px] flex items-center justify-center">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={currentIndex}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.5 }}
-                                className="absolute w-full"
-                            >
-                                <h2 className="text-xl md:text-3xl font-serif font-medium leading-relaxed text-neutral-900 mb-8 px-4">
-                                    &quot;{testimonials[currentIndex].text}&quot;
-                                </h2>
-                                <div className="flex flex-col items-center">
-                                    <div className="w-12 h-1 bg-black mb-4"></div>
-                                    <span className="text-base font-sans font-bold uppercase tracking-widest text-black mb-1">
-                                        {testimonials[currentIndex].author}
-                                    </span>
-                                    <span className="text-xs font-sans text-neutral-500 uppercase tracking-widest">
-                                        {testimonials[currentIndex].role}
-                                    </span>
-                                </div>
-                            </motion.div>
-                        </AnimatePresence>
-                    </div>
-
-                    {/* Dots Navigation */}
-                    {testimonials.length > 1 && (
-                        <div className="flex justify-center space-x-2 mt-10">
-                            {testimonials.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setCurrentIndex(index)}
-                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex ? "bg-black w-6" : "bg-neutral-300"
-                                        }`}
-                                    aria-label={`Go to testimonial ${index + 1}`}
-                                />
-                            ))}
-                        </div>
-                    )}
+        <div className="py-24 bg-bgDark relative" style={{ padding: '100px 0' }}>
+            <div className="flex justify-between items-center mb-8">
+                <div></div>
+                {/* Navigation Arrows */}
+                <div className="flex gap-2">
+                    <button className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                        <span className="sr-only">Previous</span>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                        <span className="sr-only">Next</span>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
                 </div>
             </div>
-        </section>
+
+            <div className="relative glass p-8 md:p-10 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent">
+                {/* Large Opening Quote Mark */}
+                <div className="text-6xl md:text-8xl font-bold text-teal-400/80 leading-none mb-4" style={{ fontFamily: 'Georgia, serif' }}>
+                    &ldquo;&ldquo;
+                </div>
+
+                <blockquote className="relative z-10">
+                    <p className="text-lg md:text-xl text-gray-200 font-light italic leading-relaxed mb-6">
+                        &ldquo;Deepanshu was an excellent and valued member of my team…
+                        always exceeded expectations.&rdquo;
+                    </p>
+                    <footer className="flex items-center gap-4">
+                        <div>
+                            <cite className="not-italic font-bold text-white block">~ John Newton</cite>
+                        </div>
+                    </footer>
+                </blockquote>
+
+                {/* Signature Placeholder */}
+                <div className="absolute bottom-8 right-8 w-24 opacity-50 hidden md:block">
+                    <Image
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGLJc7UZ_WX607n4ijX0OPT7C9J-bX9LfaiIcGs-D-VgbJIsz5RA5n6oVkGwvVUOpSnswO3nBCEQ5ioRgOY7FaIgsA7uOB-IiD8WakdyGJLe9iaADewEA5yqzhGIlMOqtdKh3AVrw4eFgUy5MQcsPUzTyaUhZOMGL0-_sryGcTUIu7nlUd4-TBwdyfOdMjQOW_X3_OIiHqtcbZxgzm-ZVSzQSgg4ajrZPzl_bScsu3Z-VZ2cr4WHqhYa_yDlFeRmoyrWMDgMyMnDk"
+                        alt="Signature"
+                        width={96}
+                        height={48}
+                    />
+                </div>
+
+                {/* Large Closing Quote Mark */}
+                <div className="absolute bottom-6 right-24 md:right-32 text-6xl md:text-8xl font-bold text-teal-400/80 leading-none" style={{ fontFamily: 'Georgia, serif' }}>
+                    &rdquo;&rdquo;
+                </div>
+            </div>
+        </div>
     );
 }

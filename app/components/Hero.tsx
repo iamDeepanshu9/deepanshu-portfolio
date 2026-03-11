@@ -1,155 +1,72 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { useData } from "../context/DataContext";
-import { FaLinkedin, FaGithub, FaArrowRight } from "react-icons/fa";
+import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Hero() {
-  const { blogs } = useData();
-  const latestBlog = blogs[0];
-
   return (
-    <section className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-white overflow-hidden">
-      {/* Left Side - Image Placeholder */}
-      <motion.div
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="hidden md:flex w-full md:w-1/2 h-[150vh] md:h-screen bg-neutral-100 items-center justify-center relative"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200" />
-        <div className="relative w-full h-full">
-          {/* <Image
-                        src="/images/dipu2.png"
-                        alt="Deepanshu Kumar"
-                        fill
-                        className="object-cover object-center"
-                        priority
-                    /> */}
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover"
-          >
-            <source src="/images/doodle.mp4" type="video/mp4" />
-            {/* fallback text */}
-          </video>
-        </div>
-      </motion.div>
+    <section className="relative min-h-[90vh] flex items-center pt-20" id="home">
+      {/* Background Gradient Blob */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-neonBlue/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
 
-      {/* Right Side - Text */}
-      <div className="w-full md:w-1/2 p-8 md:p-24 flex flex-col justify-center items-start relative">
-        {/* Latest Blog Banner */}
-        {latestBlog && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-8 inline-block"
-          >
-            <a
-              href={`/blog/${latestBlog.slug}`}
-              className="inline-flex items-center px-4 py-2 rounded-full bg-neutral-50 border border-neutral-200 text-sm text-neutral-600 hover:bg-neutral-100 transition-colors"
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+          {/* Left Content */}
+          <div className="z-10 relative mt-10 md:mt-20">
+            <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-4 leading-[1.1] tracking-tight">
+              Deepanshu <br />
+              Kumar
+            </h1>
+            <p className="text-gray-400 font-medium tracking-widest text-sm mb-6 mt-6 uppercase">
+              SDE2 — REMOTESTATE
+            </p>
+
+            {/* Background Outline Text Effect - Brought to foreground and restyled as per mockup */}
+            <div
+              className="mt-6 mb-10 w-fit"
             >
-              <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-              <span className="font-medium mr-2">New:</span>
-              <span className="truncate max-w-[200px] sm:max-w-xs">
-                {latestBlog.title}
+              <span className="text-4xl md:text-[2.5rem] font-black tracking-widest text-transparent bg-clip-text" style={{
+                WebkitTextStroke: '1px #a855f7',
+                backgroundImage: 'linear-gradient(90deg, #a855f7, #3b82f6, #06b6d4)',
+              }}>
+                BUILDING FUTURE TECH
               </span>
-              <svg
-                className="w-4 h-4 ml-2 text-neutral-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            </div>
+
+            <div className="flex flex-wrap gap-4 mt-8 relative z-20">
+              <Link
+                href="#works"
+                className="px-6 py-3 bg-neonBlue/10 hover:bg-neonBlue/20 border border-neonBlue border-opacity-50 rounded-full text-white font-medium transition-all shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(59,130,246,0.4)]"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </a>
-          </motion.div>
-        )}
-
-        <motion.span
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-sm md:text-base font-sans font-medium tracking-[0.3em] text-gray-500 uppercase mb-4"
-        >
-          SDE2- Remotestate
-        </motion.span>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-black mb-6 tracking-tight leading-tight"
-        >
-          Deepanshu <br /> Kumar
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="text-l md:text-xl text-neutral-600 font-sans font-light mb-10 tracking-wide max-w-lg"
-        >
-          I&apos;m a software developer with over 4 years of experience in
-          front-end, full-stack, and backend development. I specialize in
-          Angular, React, Next.js, Node.js, and PostgreSQL, with hands-on
-          expertise in building scalable applications, mentoring teams, and
-          optimizing performance. I’m always learning and exploring new
-          technologies to deliver better products.
-        </motion.p>
-
-        {/* Social Links */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          className="flex flex-col sm:flex-row items-center sm:items-center justify-center sm:justify-start gap-4 mb-10 w-full sm:w-auto"
-        >
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <a
-              href="#portfolio"
-              className="px-8 py-4 bg-black text-white rounded-full font-medium hover:bg-neutral-800 transition-all duration-300 shadow-lg hover:shadow-xl w-full sm:w-auto text-center"
-            >
-              View Projects
-            </a>
-            <a
-              href="#contact"
-              className="group relative px-8 py-4 bg-white text-black border-2 border-neutral-200 rounded-full font-medium hover:border-black transition-all duration-300 w-full sm:w-auto text-center flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
-            >
-              <span>Let's Connect</span>
-              <FaArrowRight className="text-sm transform group-hover:translate-x-1 transition-transform duration-300" />
-            </a>
+                View Projects
+              </Link>
+              <Link
+                href="#contact"
+                className="px-6 py-3 text-teal-300 hover:text-white font-medium border-b border-teal-500/50 hover:border-teal-400 transition-all flex items-center gap-2"
+              >
+                Let's Connect
+              </Link>
+            </div>
           </div>
 
-          <div className="flex gap-4 mt-2 sm:mt-0">
-            <a
-              href="https://www.linkedin.com/in/iamdeepanshu9/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-center w-12 h-12 rounded-full border-2 border-neutral-300 hover:border-black transition-all duration-300 hover:scale-110"
-            >
-              <FaLinkedin className="text-xl text-neutral-600 group-hover:text-black transition-colors duration-300" />
-            </a>
-            <a
-              href="https://github.com/iamDeepanshu9"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-center w-12 h-12 rounded-full border-2 border-neutral-300 hover:border-black transition-all duration-300 hover:scale-110"
-            >
-              <FaGithub className="text-xl text-neutral-600 group-hover:text-black transition-colors duration-300" />
-            </a>
+          {/* Right Content (Image) */}
+          <div className="relative flex justify-center lg:justify-end z-10">
+            {/* Decorative circle behind image */}
+            <div className="absolute w-[400px] h-[400px] bg-gradient-to-tr from-neonBlue/20 to-neonPurple/20 rounded-full blur-2xl animate-pulse"></div>
+
+            <Image
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8QsAJdHMFOBCPwvp1hgdvJs2Ek_41F0-zelI23nsm0qE-lKy2pq_Qlvwg0JUi8g2x9f_2DOQDiByod7fzCVH4TzoUvv6m4TparfN87_R3tJIawRh1aKgdN18YDbbFGUBE6_jk5THOepeNuHZPIm5RSnTeztWxjLZpICh5qQwL6sxfFFA7EVYAmwERaDCLOWazQGmY7CEbowgInAfyjNEnDD5B3z8ir8SG8ZLmRf7VUFJpjGXPUNCKcmy-xHb7XuGzHyM_iVuiENg"
+              alt="3D Developer Illustration"
+              width={500}
+              height={500}
+              className="relative w-full max-w-md drop-shadow-2xl transform hover:scale-105 transition-transform duration-500 h-auto"
+              priority
+            />
           </div>
-        </motion.div>
+
+        </div>
       </div>
     </section>
   );
